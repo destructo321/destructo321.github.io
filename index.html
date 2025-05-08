@@ -73,7 +73,7 @@
          /* Style for the message box */
         .message-box {
             position: fixed;
-            bottom: 5rem; /* Position above the fixed footer */
+            bottom: 5rem; /* Position above the fixed footer initially */
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.7);
@@ -142,7 +142,7 @@
         /* Styles for the fixed footer container */
         .fixed-footer {
             position: fixed;
-            bottom: 0;
+            bottom: 0; /* Initially at the very bottom */
             left: 0;
             right: 0;
             display: flex; /* Use flexbox to align items */
@@ -153,6 +153,7 @@
             z-index: 999; /* Ensure it's above other content but below message box */
             width: 100%; /* Ensure footer takes full width */
             box-sizing: border-box; /* Include padding in the element's total width */
+            transition: bottom 0.3s ease-out; /* Smooth transition when bottom changes */
         }
 
         /* Add margin to the copy button to help center it */
@@ -269,33 +270,37 @@
           });
         }
 
-        // Function to adjust body padding based on visual viewport
-        function adjustBodyPadding() {
+        // Function to adjust layout based on visual viewport (including keyboard)
+        function adjustLayoutForKeyboard() {
             if (window.visualViewport) {
                 const viewportHeight = window.visualViewport.height;
                 const layoutViewportHeight = window.innerHeight;
                 const keyboardHeight = layoutViewportHeight - viewportHeight;
 
-                // Get the actual height of the fixed footer
-                const footerHeight = fixedFooter.offsetHeight;
+                // Adjust the bottom position of the fixed footer
+                fixedFooter.style.bottom = `${keyboardHeight}px`;
 
-                // Set body padding-bottom to be the height of the keyboard plus the footer height
-                // This ensures the textarea is not obscured by the keyboard or the footer
-                 body.style.paddingBottom = `${keyboardHeight + footerHeight + 16}px`; // Added a little extra padding
+                // Adjust the padding-bottom of the body to ensure textarea content is visible above the footer and keyboard
+                const footerHeight = fixedFooter.offsetHeight;
+                body.style.paddingBottom = `${footerHeight + keyboardHeight + 16}px`; // Add a little extra padding
+                 // Also adjust message box position relative to the new footer position
+                messageBox.style.bottom = `${keyboardHeight + footerHeight + 16}px`; // Position above the footer
             } else {
                  // Fallback for browsers that don't support visualViewport
-                 // We'll keep the original padding-bottom or a default
-                 body.style.paddingBottom = '6rem'; // Or calculate based on fixedFooter.offsetHeight if possible
+                 // We'll keep the original padding-bottom and footer position
+                 body.style.paddingBottom = '6rem';
+                 fixedFooter.style.bottom = '0';
+                 messageBox.style.bottom = '5rem';
             }
         }
 
-        // Adjust padding on initial load and on visual viewport resize (keyboard appearance/disappearance)
-        window.addEventListener('load', adjustBodyPadding);
+        // Adjust layout on initial load and on visual viewport resize (keyboard appearance/disappearance)
+        window.addEventListener('load', adjustLayoutForKeyboard);
         if (window.visualViewport) {
-             window.visualViewport.addEventListener('resize', adjustBodyPadding);
+             window.visualViewport.addEventListener('resize', adjustLayoutForKeyboard);
         } else {
             // Add a regular resize listener as a fallback if visualViewport is not supported
-            window.addEventListener('resize', adjustBodyPadding);
+            window.addEventListener('resize', adjustLayoutForKeyboard);
         }
 
 
