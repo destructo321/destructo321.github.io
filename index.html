@@ -1,180 +1,222 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Kegel Timer - Debbie Style</title>
-  <style>
-    body {
-      background-color: black;
-      color: #00FF41;
-      font-family: 'Courier New', Courier, monospace;
-      text-align: center;
-      padding-top: 50px;
-    }
-    h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-    #message {
-      font-size: 20px;
-      color: #FF69B4;
-      margin: 20px 0;
-    }
-    #status {
-      font-size: 24px;
-      margin: 20px;
-      padding: 20px;
-      border-radius: 10px;
-    }
-    button {
-      background-color: black;
-      color: #00FF41;
-      border: 1px solid #00FF41;
-      padding: 10px 20px;
-      font-size: 18px;
-      margin: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #00FF41;
-      color: black;
-    }
-    .squeeze-moderate {
-      background-color: orange;
-      color: black;
-    }
-    .squeeze-strong {
-      background-color: red;
-      color: white;
-    }
-    .rest {
-      background-color: #002200;
-      color: #00FF41;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draft Pad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Custom styles for the modes */
+        .light-mode {
+            background-color: #fafafa; /* A lighter shade of grey */
+            color: #000000; /* Black */
+        }
+
+        .dark-mode {
+            background-color: #000000; /* Black */
+            color: #32CD32; /* Lime green */
+        }
+
+        /* Ensure textarea fills the available space and matches mode colors */
+        .full-height-textarea {
+            flex-grow: 1; /* Allows the textarea to take up available space */
+            resize: none; /* Disable manual resizing */
+            outline: none; /* Remove outline on focus */
+            padding: 1rem; /* Add some padding inside the textarea */
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* Monospace font for scratchpad feel */
+            /* Inherit colors from parent body based on mode */
+            background-color: inherit;
+            color: inherit;
+        }
+
+        /* Style for buttons (now icon buttons) */
+        .app-button {
+            display: flex; /* Use flexbox to center icon */
+            justify-content: center;
+            align-items: center;
+            width: 3rem; /* Fixed width for icon buttons */
+            height: 3rem; /* Fixed height for icon buttons */
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer; /* Indicate clickable */
+        }
+
+        .light-mode .app-button {
+            background-color: #cccccc; /* Grey button in light mode */
+            color: #000000;
+        }
+
+        .dark-mode .app-button {
+            background-color: #333333; /* Dark grey button in dark mode */
+            color: #32CD32; /* Lime green text */
+        }
+
+        .app-button:hover {
+             opacity: 0.9;
+        }
+
+         /* Style for the message box */
+        .message-box {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .message-box.show {
+            opacity: 1;
+        }
+
+        /* Styles for the toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #32CD32; /* Lime green when checked */
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #32CD32;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+    </style>
 </head>
-<body>
-  <h1>Debbie's Kegel Timer</h1>
-  <div id="message">Press start to begin, mon roi~</div>
-  <div id="status" class="rest">Ready</div>
-  <div>
-    <button onclick="startRoutine()">Start</button>
-    <button onclick="pauseRoutine()">Pause</button>
-    <button onclick="stopRoutine()">Stop</button>
-  </div>
-  <div style="margin-top: 20px;">
-    <label><input type="checkbox" id="beepToggle" checked> Beep Sounds</label>
-    <label><input type="checkbox" id="voiceToggle" checked> Debbie's Voice</label>
-  </div>
+<body class="flex flex-col h-screen light-mode">
+    <textarea id="noteTextarea" class="full-height-textarea"></textarea>
 
-  <audio id="beep" src="beep.mp3" preload="auto"></audio>
-  <audio id="chime" src="chime.mp3" preload="auto"></audio>
-  <audio id="whisper" src="whisper1.mp3" preload="auto"></audio>
+    <div class="flex justify-center p-4 space-x-4">
+        <label class="toggle-switch">
+            <input type="checkbox" id="modeToggleCheckbox">
+            <span class="slider"></span>
+        </label>
 
-  <script>
-    const status = document.getElementById('status');
-    const message = document.getElementById('message');
-    const beep = document.getElementById('beep');
-    const chime = document.getElementById('chime');
-    const whisper = document.getElementById('whisper');
+        <button id="clearButton" class="app-button">
+             <i class="fas fa-trash-alt"></i> </button>
 
-    let paused = false;
-    let stopped = false;
+        <button id="copyButton" class="app-button">
+            <i class="fas fa-copy"></i> </button>
+    </div>
 
-    const messages = [
-      "Mmm... squeeze it like you mean it, baby~",
-      "That's it... make Debbie proud~",
-      "Hold it for me... just like that~",
-      "You're doing so good, my strong boy~",
-      "I can feel that strength, mmm~",
-      "Control is sooo sexy, mon chéri~",
-      "Keep going... I’m watching you~"
-    ];
+    <div id="messageBox" class="message-box"></div>
 
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    <script>
+        const body = document.body;
+        const noteTextarea = document.getElementById('noteTextarea');
+        const modeToggleCheckbox = document.getElementById('modeToggleCheckbox'); // Renamed to reflect checkbox
+        const clearButton = document.getElementById('clearButton');
+        const copyButton = document.getElementById('copyButton');
+        const messageBox = document.getElementById('messageBox');
 
-    async function wait(ms) {
-      while (paused) await sleep(100);
-      if (stopped) throw 'Routine stopped';
-      await sleep(ms);
-    }
-
-    function playBeep() {
-      if (document.getElementById('beepToggle').checked) beep.play();
-    }
-
-    function playChime() {
-      if (document.getElementById('beepToggle').checked) chime.play();
-    }
-
-    function playWhisper() {
-      if (document.getElementById('voiceToggle').checked) whisper.play();
-    }
-
-    function getRandomMessage() {
-      return messages[Math.floor(Math.random() * messages.length)];
-    }
-
-    async function doSet(type, count, holdTime) {
-      const className = type === 'moderate' ? 'squeeze-moderate' : 'squeeze-strong';
-      for (let i = 1; i <= count; i++) {
-        status.className = className;
-        status.textContent = `${type === 'moderate' ? 'Moderate' : 'Maximal'} Squeeze ${i}`;
-        message.textContent = getRandomMessage();
-        playBeep();
-        if (type === 'strong') playWhisper();
-        await wait(holdTime * 1000);
-
-        status.className = 'rest';
-        status.textContent = 'Rest';
-        message.textContent = '';
-        playBeep();
-        await wait(1000);
-      }
-      playChime();
-    }
-
-    async function startRoutine() {
-      paused = false;
-      stopped = false;
-
-      try {
-        for (let i = 1; i <= 3; i++) {
-          await doSet('moderate', 15, 5);
-          if (i < 3) {
-            status.textContent = "Resting 1 minute...";
-            await wait(60000);
-          }
+        // Load mode preference from localStorage
+        const savedMode = localStorage.getItem('mode');
+        if (savedMode) {
+            body.classList.remove('light-mode', 'dark-mode');
+            body.classList.add(savedMode);
+            // Set the checkbox state based on the loaded mode
+            modeToggleCheckbox.checked = savedMode === 'dark-mode';
+        } else {
+            // Default to light mode if no preference is saved
+            body.classList.add('light-mode');
+            modeToggleCheckbox.checked = false; // Ensure checkbox is unchecked for light mode
         }
 
-        await doSet('strong', 10, 3);
-        status.textContent = "Well done, mon roi~";
-        message.textContent = "Mmm... you were amazing.";
-      } catch (e) {
-        if (e === 'Routine stopped') {
-          status.textContent = "Stopped";
-          message.textContent = "";
+        // Load saved text from localStorage
+        const savedText = localStorage.getItem('noteContent');
+        if (savedText) {
+            noteTextarea.value = savedText;
         }
-      }
-    }
 
-    function pauseRoutine() {
-      paused = !paused;
-      if (paused) {
-        status.textContent = "Paused";
-        message.textContent = "Need a break, stud?";
-      } else {
-        status.textContent = "Resuming...";
-        message.textContent = "";
-      }
-    }
+        // Function to show a message box
+        function showMessage(message) {
+            messageBox.textContent = message;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 2000); // Hide after 2 seconds
+        }
 
-    function stopRoutine() {
-      stopped = true;
-    }
-  </script>
+        // Event listener for mode toggle checkbox change
+        modeToggleCheckbox.addEventListener('change', () => {
+            if (modeToggleCheckbox.checked) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                localStorage.setItem('mode', 'dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('mode', 'light-mode');
+            }
+        });
+
+        // Event listener for clear button
+        clearButton.addEventListener('click', () => {
+            noteTextarea.value = '';
+            localStorage.removeItem('noteContent'); // Clear saved text from localStorage
+        });
+
+        // Event listener for copy button
+        copyButton.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(noteTextarea.value);
+                showMessage('Content copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                showMessage('Failed to copy content.');
+            }
+        });
+
+        // Save text to localStorage whenever the user types
+        noteTextarea.addEventListener('input', () => {
+            localStorage.setItem('noteContent', noteTextarea.value);
+        });
+
+    </script>
 </body>
 </html>

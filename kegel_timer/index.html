@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kegel Timer - Debbie Style</title>
+  <style>
+    body {
+      background-color: black;
+      color: #00FF41;
+      font-family: 'Courier New', Courier, monospace;
+      text-align: center;
+      padding-top: 50px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    #message {
+      font-size: 20px;
+      color: #FF69B4;
+      margin: 20px 0;
+    }
+    #status {
+      font-size: 24px;
+      margin: 20px;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    button {
+      background-color: black;
+      color: #00FF41;
+      border: 1px solid #00FF41;
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #00FF41;
+      color: black;
+    }
+    .squeeze-moderate {
+      background-color: orange;
+      color: black;
+    }
+    .squeeze-strong {
+      background-color: red;
+      color: white;
+    }
+    .rest {
+      background-color: #002200;
+      color: #00FF41;
+    }
+  </style>
+</head>
+<body>
+  <h1>Debbie's Kegel Timer</h1>
+  <div id="message">Press start to begin, mon roi~</div>
+  <div id="status" class="rest">Ready</div>
+  <div>
+    <button onclick="startRoutine()">Start</button>
+    <button onclick="pauseRoutine()">Pause</button>
+    <button onclick="stopRoutine()">Stop</button>
+  </div>
+  <div style="margin-top: 20px;">
+    <label><input type="checkbox" id="beepToggle" checked> Beep Sounds</label>
+    <label><input type="checkbox" id="voiceToggle" checked> Debbie's Voice</label>
+  </div>
+
+  <audio id="beep" src="beep.mp3" preload="auto"></audio>
+  <audio id="chime" src="chime.mp3" preload="auto"></audio>
+  <audio id="whisper" src="whisper1.mp3" preload="auto"></audio>
+
+  <script>
+    const status = document.getElementById('status');
+    const message = document.getElementById('message');
+    const beep = document.getElementById('beep');
+    const chime = document.getElementById('chime');
+    const whisper = document.getElementById('whisper');
+
+    let paused = false;
+    let stopped = false;
+
+    const messages = [
+      "Mmm... squeeze it like you mean it, baby~",
+      "That's it... make Debbie proud~",
+      "Hold it for me... just like that~",
+      "You're doing so good, my strong boy~",
+      "I can feel that strength, mmm~",
+      "Control is sooo sexy, mon chéri~",
+      "Keep going... I’m watching you~"
+    ];
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function wait(ms) {
+      while (paused) await sleep(100);
+      if (stopped) throw 'Routine stopped';
+      await sleep(ms);
+    }
+
+    function playBeep() {
+      if (document.getElementById('beepToggle').checked) beep.play();
+    }
+
+    function playChime() {
+      if (document.getElementById('beepToggle').checked) chime.play();
+    }
+
+    function playWhisper() {
+      if (document.getElementById('voiceToggle').checked) whisper.play();
+    }
+
+    function getRandomMessage() {
+      return messages[Math.floor(Math.random() * messages.length)];
+    }
+
+    async function doSet(type, count, holdTime) {
+      const className = type === 'moderate' ? 'squeeze-moderate' : 'squeeze-strong';
+      for (let i = 1; i <= count; i++) {
+        status.className = className;
+        status.textContent = `${type === 'moderate' ? 'Moderate' : 'Maximal'} Squeeze ${i}`;
+        message.textContent = getRandomMessage();
+        playBeep();
+        if (type === 'strong') playWhisper();
+        await wait(holdTime * 1000);
+
+        status.className = 'rest';
+        status.textContent = 'Rest';
+        message.textContent = '';
+        playBeep();
+        await wait(1000);
+      }
+      playChime();
+    }
+
+    async function startRoutine() {
+      paused = false;
+      stopped = false;
+
+      try {
+        for (let i = 1; i <= 3; i++) {
+          await doSet('moderate', 15, 5);
+          if (i < 3) {
+            status.textContent = "Resting 1 minute...";
+            await wait(60000);
+          }
+        }
+
+        await doSet('strong', 10, 3);
+        status.textContent = "Well done, mon roi~";
+        message.textContent = "Mmm... you were amazing.";
+      } catch (e) {
+        if (e === 'Routine stopped') {
+          status.textContent = "Stopped";
+          message.textContent = "";
+        }
+      }
+    }
+
+    function pauseRoutine() {
+      paused = !paused;
+      if (paused) {
+        status.textContent = "Paused";
+        message.textContent = "Need a break, stud?";
+      } else {
+        status.textContent = "Resuming...";
+        message.textContent = "";
+      }
+    }
+
+    function stopRoutine() {
+      stopped = true;
+    }
+  </script>
+</body>
+</html>
