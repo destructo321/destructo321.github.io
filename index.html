@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draft Pad</title>
+    <title>Simple Scratchpad</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -19,6 +19,15 @@
         }
 
         /* Ensure textarea fills the available space and matches mode colors */
+        /* Add padding to the bottom to prevent content from being hidden by the fixed footer */
+        body {
+            padding-bottom: 6rem; /* Adjust this value based on the height of your footer */
+            margin: 0; /* Remove default body margin */
+            display: flex; /* Use flexbox for body to manage layout */
+            flex-direction: column; /* Stack children vertically */
+            min-height: 100vh; /* Ensure body takes at least full viewport height */
+        }
+
         .full-height-textarea {
             flex-grow: 1; /* Allows the textarea to take up available space */
             resize: none; /* Disable manual resizing */
@@ -28,6 +37,8 @@
             /* Inherit colors from parent body based on mode */
             background-color: inherit;
             color: inherit;
+            width: 100%; /* Ensure textarea takes full width */
+            box-sizing: border-box; /* Include padding in the element's total width and height */
         }
 
         /* Style for buttons (now icon buttons) */
@@ -60,7 +71,7 @@
          /* Style for the message box */
         .message-box {
             position: fixed;
-            bottom: 1rem;
+            bottom: 5rem; /* Position above the fixed footer */
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.7);
@@ -126,23 +137,48 @@
             transform: translateX(26px);
         }
 
+        /* Styles for the fixed footer container */
+        .fixed-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex; /* Use flexbox to align items */
+            justify-content: space-between; /* Distribute items with space between */
+            align-items: center; /* Vertically center items */
+            padding: 1rem; /* Add padding around the items */
+            background-color: inherit; /* Inherit background color from body for mode change */
+            z-index: 999; /* Ensure it's above other content but below message box */
+            width: 100%; /* Ensure footer takes full width */
+            box-sizing: border-box; /* Include padding in the element's total width */
+        }
+
+        /* Add margin to the copy button to help center it */
+        #copyButton {
+             margin: 0 auto; /* Auto margins push the element to the center in a flex container */
+        }
+
+
     </style>
 </head>
 <body class="flex flex-col h-screen light-mode">
     <textarea id="noteTextarea" class="full-height-textarea"></textarea>
 
-    <div class="flex justify-center p-4 space-x-4">
+    <div class="fixed-footer">
         <label class="toggle-switch">
             <input type="checkbox" id="modeToggleCheckbox">
             <span class="slider"></span>
         </label>
 
-        <button id="clearButton" class="app-button">
-             <i class="fas fa-trash-alt"></i> </button>
-
         <button id="copyButton" class="app-button">
-            <i class="fas fa-copy"></i> </button>
+            <i class="fas fa-copy"></i>
+        </button>
+
+        <button id="clearButton" class="app-button">
+             <i class="fas fa-trash-alt"></i>
+        </button>
     </div>
+
 
     <div id="messageBox" class="message-box"></div>
 
