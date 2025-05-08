@@ -23,7 +23,7 @@
         /* Ensure textarea fills the available space and matches mode colors */
         /* Add padding to the bottom to prevent content from being hidden by the fixed footer */
         body {
-            padding-bottom: 6rem; /* Adjust this value based on the height of your footer */
+            /* padding-bottom will be set by JavaScript */
             margin: 0; /* Remove default body margin */
             display: flex; /* Use flexbox for body to manage layout */
             flex-direction: column; /* Stack children vertically */
@@ -191,6 +191,7 @@
         const clearButton = document.getElementById('clearButton');
         const copyButton = document.getElementById('copyButton');
         const messageBox = document.getElementById('messageBox');
+        const fixedFooter = document.querySelector('.fixed-footer');
 
         // Load mode preference from localStorage
         const savedMode = localStorage.getItem('mode');
@@ -267,6 +268,36 @@
               });
           });
         }
+
+        // Function to adjust body padding based on visual viewport
+        function adjustBodyPadding() {
+            if (window.visualViewport) {
+                const viewportHeight = window.visualViewport.height;
+                const layoutViewportHeight = window.innerHeight;
+                const keyboardHeight = layoutViewportHeight - viewportHeight;
+
+                // Get the actual height of the fixed footer
+                const footerHeight = fixedFooter.offsetHeight;
+
+                // Set body padding-bottom to be the height of the keyboard plus the footer height
+                // This ensures the textarea is not obscured by the keyboard or the footer
+                 body.style.paddingBottom = `${keyboardHeight + footerHeight + 16}px`; // Added a little extra padding
+            } else {
+                 // Fallback for browsers that don't support visualViewport
+                 // We'll keep the original padding-bottom or a default
+                 body.style.paddingBottom = '6rem'; // Or calculate based on fixedFooter.offsetHeight if possible
+            }
+        }
+
+        // Adjust padding on initial load and on visual viewport resize (keyboard appearance/disappearance)
+        window.addEventListener('load', adjustBodyPadding);
+        if (window.visualViewport) {
+             window.visualViewport.addEventListener('resize', adjustBodyPadding);
+        } else {
+            // Add a regular resize listener as a fallback if visualViewport is not supported
+            window.addEventListener('resize', adjustBodyPadding);
+        }
+
 
     </script>
 </body>
