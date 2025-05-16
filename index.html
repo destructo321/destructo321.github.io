@@ -47,7 +47,6 @@
             transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for mode and color change */
             padding: 0; /* Remove body padding */
             overflow: hidden; /* Prevent body scrolling, textarea will handle it */
-            /* padding-bottom will be set by JavaScript dynamically */
         }
 
 
@@ -56,6 +55,7 @@
             resize: none; /* Disable manual resizing */
             outline: none; /* Remove default outline */
             padding: 1.5rem; /* Add padding inside the textarea */
+            /* padding-bottom will be set by JavaScript dynamically */
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* Monospace font for scratchpad feel */
             color: inherit; /* Text color inherits from body */
             width: 100%; /* Ensure textarea takes full width of its container */
@@ -390,24 +390,25 @@
                 floatingControls.style.bottom = `${newBottomPosition}px`;
                 wordCountElement.style.bottom = `${newBottomPosition}px`; // Align word count with controls
 
-                // Calculate the required padding-bottom for the textarea.
-                // This padding should be enough to ensure the last line of text is visible above the floating elements when the keyboard is up.
-                // It should be at least the height of the floating controls + their initial bottom offset + a buffer.
-                const floatingControlsHeight = floatingControls.offsetHeight;
-                const requiredPaddingBottom = floatingControlsHeight + initialBottomOffset + 16; // Add a little extra padding
+                // Calculate the available height for the textarea.
+                // This is the visual viewport height minus the top padding and the space needed for the floating elements at the bottom.
+                const topPadding = 1.5 * 16; // 1.5rem converted to pixels (textarea padding-top)
+                const floatingElementsHeight = floatingControls.offsetHeight; // Use controls height as a reference
+                const spaceForFloatingElements = floatingElementsHeight + initialBottomOffset + 16; // Height + offset + buffer
 
-                // Set the padding-bottom of the textarea
-                noteTextarea.style.paddingBottom = `${requiredPaddingBottom}px`;
+                // Set the height of the textarea directly based on the visual viewport height
+                // This should force the textarea to fit within the visible area above the keyboard.
+                noteTextarea.style.height = `${viewportHeight - topPadding - spaceForFloatingElements}px`;
+
 
                  // Also adjust message box position relative to the new floating controls position
-                 messageBox.style.bottom = `${newBottomPosition + floatingControlsHeight + 16}px`; // Position above the floating controls
+                 messageBox.style.bottom = `${newBottomPosition + floatingElementsHeight + 16}px`; // Position above the floating controls
             } else {
                  // Fallback for browsers that don't support visualViewport
-                 // Keep the original floating elements position
+                 // Keep the original floating elements position and textarea behavior
                  floatingControls.style.bottom = '1.5rem';
                  wordCountElement.style.bottom = '1.5rem';
-                 // Revert textarea padding-bottom to a default if visualViewport is not supported
-                 noteTextarea.style.paddingBottom = '8rem'; // Revert to the fixed value
+                 noteTextarea.style.height = ''; // Revert to CSS/flexbox height
                  messageBox.style.bottom = '5rem'; // This might need adjustment based on actual footer height in fallback
             }
         }
