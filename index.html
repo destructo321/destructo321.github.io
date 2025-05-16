@@ -43,7 +43,8 @@
             margin: 0; /* Remove default body margin */
             display: flex; /* Use flexbox for body to manage layout */
             flex-direction: column; /* Stack children vertically */
-            min-height: 100vh; /* Ensure body takes at least full viewport height */
+            /* Height will be set by JavaScript based on visual viewport */
+            height: 100vh; /* Default height, will be overridden by JS */
             transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for mode and color change */
             padding: 0; /* Remove body padding */
             overflow: hidden; /* Prevent body scrolling, textarea will handle it */
@@ -55,7 +56,7 @@
             resize: none; /* Disable manual resizing */
             outline: none; /* Remove default outline */
             padding: 1.5rem; /* Add padding inside the textarea */
-            /* padding-bottom will be set by JavaScript dynamically */
+            padding-bottom: 10rem; /* Add fixed padding-bottom to make space for floating controls and keyboard */
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* Monospace font for scratchpad feel */
             color: inherit; /* Text color inherits from body */
             width: 100%; /* Ensure textarea takes full width of its container */
@@ -390,25 +391,20 @@
                 floatingControls.style.bottom = `${newBottomPosition}px`;
                 wordCountElement.style.bottom = `${newBottomPosition}px`; // Align word count with controls
 
-                // Calculate the available height for the textarea.
-                // This is the visual viewport height minus the top padding and the space needed for the floating elements at the bottom.
-                const topPadding = 1.5 * 16; // 1.5rem converted to pixels (textarea padding-top)
-                const floatingElementsHeight = floatingControls.offsetHeight; // Use controls height as a reference
-                const spaceForFloatingElements = floatingElementsHeight + initialBottomOffset + 16; // Height + offset + buffer
-
-                // Set the height of the textarea directly based on the visual viewport height
-                // This should force the textarea to fit within the visible area above the keyboard.
-                noteTextarea.style.height = `${viewportHeight - topPadding - spaceForFloatingElements}px`;
+                // Set the height of the body to the visual viewport height
+                // This should force the entire app container to fit within the visible area above the keyboard.
+                body.style.height = `${viewportHeight}px`;
 
 
                  // Also adjust message box position relative to the new floating controls position
-                 messageBox.style.bottom = `${newBottomPosition + floatingElementsHeight + 16}px`; // Position above the floating controls
+                 const floatingControlsHeight = floatingControls.offsetHeight;
+                 messageBox.style.bottom = `${newBottomPosition + floatingControlsHeight + 16}px`; // Position above the floating controls
             } else {
                  // Fallback for browsers that don't support visualViewport
                  // Keep the original floating elements position and textarea behavior
                  floatingControls.style.bottom = '1.5rem';
                  wordCountElement.style.bottom = '1.5rem';
-                 noteTextarea.style.height = ''; // Revert to CSS/flexbox height
+                 body.style.height = '100vh'; // Revert to default height
                  messageBox.style.bottom = '5rem'; // This might need adjustment based on actual footer height in fallback
             }
         }
