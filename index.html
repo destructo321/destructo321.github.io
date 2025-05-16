@@ -10,14 +10,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Custom styles for the modes */
+        /* Using CSS variables for easier color management */
+        :root {
+            --light-bg: #fafafa; /* A lighter shade of grey */
+            --light-text: #000000; /* Black */
+            --dark-bg: #000000; /* Black */
+            --dark-text: #80deea; /* Material 3 Light Teal for dark mode text */
+            --light-button-bg: #e0e0e0; /* Slightly lighter grey for light mode buttons */
+            --dark-button-bg: #1a1a1a; /* Darker grey for dark mode buttons */
+            --accent-color-light: #6200ee; /* A Material 3-inspired accent color (Purple) for light mode toggle */
+            --accent-color-dark: #80deea; /* Material 3 Light Teal for dark mode toggle */
+        }
+
         .light-mode {
-            background-color: #fafafa; /* A lighter shade of grey */
-            color: #000000; /* Black */
+            background-color: var(--light-bg);
+            color: var(--light-text);
         }
 
         .dark-mode {
-            background-color: #000000; /* Black */
-            color: #00FF00; /* Matrix Green */
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
         }
 
         /* Ensure textarea fills the available space and matches mode colors */
@@ -28,20 +40,22 @@
             display: flex; /* Use flexbox for body to manage layout */
             flex-direction: column; /* Stack children vertically */
             min-height: 100vh; /* Ensure body takes at least full viewport height */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for mode change */
         }
 
         .full-height-textarea {
             flex-grow: 1; /* Allows the textarea to take up available space */
             resize: none; /* Disable manual resizing */
             outline: none; /* Remove outline on focus */
-            padding: 1rem; /* Add some padding inside the textarea */
+            padding: 1.5rem; /* Increased padding for a more spacious feel */
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* Monospace font for scratchpad feel */
             /* Inherit colors from parent body based on mode */
             background-color: inherit;
             color: inherit;
             width: 100%; /* Ensure textarea takes full width */
             box-sizing: border-box; /* Include padding in the element's total width and height */
-            font-size: 1.25rem; /* Increased font size for legibility */
+            font-size: 1.35rem; /* Slightly increased font size */
+            line-height: 1.6; /* Increased line height for better readability */
         }
 
         /* Style for buttons (now icon buttons) */
@@ -49,26 +63,28 @@
             display: flex; /* Use flexbox to center icon */
             justify-content: center;
             align-items: center;
-            width: 3rem; /* Fixed width for icon buttons */
-            height: 3rem; /* Fixed height for icon buttons */
-            border-radius: 0.5rem;
+            width: 3.5rem; /* Slightly larger buttons */
+            height: 3.5rem; /* Slightly larger buttons */
+            border-radius: 0.75rem; /* More rounded corners */
             font-weight: bold;
-            transition: background-color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
             cursor: pointer; /* Indicate clickable */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
         }
 
         .light-mode .app-button {
-            background-color: #cccccc; /* Grey button in light mode */
-            color: #000000;
+            background-color: var(--light-button-bg);
+            color: var(--light-text);
         }
 
         .dark-mode .app-button {
-            background-color: #333333; /* Dark grey button in dark mode */
-            color: #00FF00; /* Matrix Green text */
+            background-color: var(--dark-button-bg);
+            color: var(--dark-text);
         }
 
         .app-button:hover {
              opacity: 0.9;
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More pronounced shadow on hover */
         }
 
          /* Style for the message box */
@@ -90,12 +106,12 @@
             opacity: 1;
         }
 
-        /* Styles for the toggle switch */
+        /* Styles for the toggle switch (Material 3 inspired) */
         .toggle-switch {
             position: relative;
             display: inline-block;
             width: 60px;
-            height: 34px;
+            height: 32px; /* Slightly adjusted height */
         }
 
         .toggle-switch input {
@@ -111,34 +127,46 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: #b0b0b0; /* Default grey for slider track */
             transition: .4s;
-            border-radius: 34px;
+            border-radius: 32px; /* Fully rounded track */
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 26px;
-            width: 26px;
+            height: 24px; /* Slightly smaller handle */
+            width: 24px; /* Slightly smaller handle */
             left: 4px;
             bottom: 4px;
-            background-color: white;
+            background-color: #ffffff; /* White handle */
             transition: .4s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow for the handle */
         }
 
         input:checked + .slider {
-            background-color: #00FF00; /* Matrix Green when checked */
+            background-color: var(--accent-color-light); /* Accent color when checked in light mode */
+        }
+
+        /* Dark mode slider checked color */
+        .dark-mode input:checked + .slider {
+             background-color: var(--accent-color-dark); /* Material 3 Light Teal in dark mode */
+        }
+
+
+        input:checked + .slider:before {
+            transform: translateX(28px); /* Adjust translation distance */
         }
 
         input:focus + .slider {
-            box-shadow: 0 0 1px #00FF00;
+            box-shadow: 0 0 1px var(--accent-color-light); /* Focus indicator */
         }
 
-        input:checked + .slider:before {
-            transform: translateX(26px);
+        .dark-mode input:focus + .slider {
+             box-shadow: 0 0 1px var(--accent-color-dark); /* Material 3 Light Teal focus in dark mode */
         }
+
 
         /* Styles for the fixed footer container */
         .fixed-footer {
@@ -149,17 +177,19 @@
             display: flex; /* Use flexbox to align items */
             justify-content: space-between; /* Distribute items with space between */
             align-items: center; /* Vertically center items */
-            padding: 1rem; /* Add padding around the items */
+            padding: 1.5rem; /* Increased padding for a more spacious feel */
             background-color: inherit; /* Inherit background color from body for mode change */
             z-index: 999; /* Ensure it's above other content but below message box */
             width: 100%; /* Ensure footer takes full width */
             box-sizing: border-box; /* Include padding in the element's total width */
-            transition: bottom 0.3s ease-out; /* Smooth transition when bottom changes */
+            transition: bottom 0.3s ease-out, background-color 0.3s ease; /* Smooth transition for position and mode change */
+            /* Removed gap here, will add gap to the button group */
         }
 
-        /* Add margin to the copy button to help center it */
-        #copyButton {
-             margin: 0 auto; /* Auto margins push the element to the center in a flex container */
+        /* Container for the right-aligned buttons */
+        .right-aligned-buttons {
+            display: flex;
+            gap: 1rem; /* Add space between the buttons on the right */
         }
 
 
@@ -174,13 +204,15 @@
             <span class="slider"></span>
         </label>
 
-        <button id="copyButton" class="app-button">
-            <i class="fas fa-copy"></i>
-        </button>
+        <div class="right-aligned-buttons">
+            <button id="clearButton" class="app-button">
+                 <i class="fas fa-trash-alt"></i>
+            </button>
 
-        <button id="clearButton" class="app-button">
-             <i class="fas fa-trash-alt"></i>
-        </button>
+            <button id="copyButton" class="app-button">
+                <i class="fas fa-copy"></i>
+            </button>
+        </div>
     </div>
 
 
