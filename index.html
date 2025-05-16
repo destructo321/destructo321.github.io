@@ -43,24 +43,35 @@
             margin: 0; /* Remove default body margin */
             display: flex; /* Use flexbox for body to manage layout */
             flex-direction: column; /* Stack children vertically */
-            min-height: 100vh; /* Ensure body takes at least full viewport height */
-            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for mode change */
+            /* Height will be set by JavaScript based on visual viewport */
+            height: 100vh; /* Default height */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for mode and color change */
             padding: 0; /* Remove body padding */
+            overflow: hidden; /* Prevent body scrolling, textarea will handle it */
         }
 
+        /* Container for the textarea to control its height */
+        .textarea-container {
+             flex-grow: 1; /* Allows the container to take up available space */
+             width: 100%;
+             /* Height will be set by JavaScript */
+             overflow-y: auto; /* Enable scrolling within this container if needed, though textarea should handle it */
+        }
+
+
         .full-height-textarea {
-            flex-grow: 1; /* Allows the textarea to take up available space within the body */
+            display: block; /* Ensure textarea is a block element */
             resize: none; /* Disable manual resizing */
             outline: none; /* Remove default outline */
             padding: 1.5rem; /* Add padding inside the textarea */
-            /* padding-bottom will be set by JavaScript dynamically */
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* Monospace font for scratchpad feel */
             color: inherit; /* Text color inherits from body */
-            width: 100%; /* Ensure textarea takes full width */
+            width: 100%; /* Ensure textarea takes full width of its container */
+            height: 100%; /* Make textarea fill the height of its container */
             box-sizing: border-box; /* Include padding in the element's total width and height */
             font-size: 1.35rem; /* Slightly increased font size */
             line-height: 1.6; /* Increased line height for better readability */
-            transition: background-color 0.3s ease, padding-bottom 0.3s ease; /* Smooth transition for background and padding */
+            transition: background-color 0.3s ease; /* Smooth transition for background */
             overflow-y: auto; /* Enable scrolling within the textarea */
         }
 
@@ -248,7 +259,10 @@
     </style>
 </head>
 <body class="flex flex-col h-screen light-mode">
-    <textarea id="noteTextarea" class="full-height-textarea"></textarea>
+    <div class="textarea-container">
+        <textarea id="noteTextarea" class="full-height-textarea"></textarea>
+    </div>
+
 
     <div class="floating-controls">
         <label class="toggle-switch">
@@ -274,6 +288,7 @@
 
     <script>
         const body = document.body;
+        const textareaContainer = document.querySelector('.textarea-container'); // Get the new container
         const noteTextarea = document.getElementById('noteTextarea');
         const modeToggleCheckbox = document.getElementById('modeToggleCheckbox'); // Renamed to reflect checkbox
         const clearButton = document.getElementById('clearButton');
@@ -387,24 +402,24 @@
                 floatingControls.style.bottom = `${newBottomPosition}px`;
                 wordCountElement.style.bottom = `${newBottomPosition}px`; // Align word count with controls
 
-                // Calculate the required padding-bottom for the textarea.
-                // This padding should be enough to ensure the last line of text is visible above the floating elements when the keyboard is up.
-                // It should be at least the height of the floating controls + their initial bottom offset + a buffer.
-                const floatingControlsHeight = floatingControls.offsetHeight;
-                const requiredPaddingBottom = floatingControlsHeight + initialBottomOffset + 16; // Add a little extra padding
+                // Calculate the available height for the textarea container
+                // This is the visual viewport height minus any potential top bar/padding and the space needed for the floating elements at the bottom
+                const bodyTopOffset = body.getBoundingClientRect().top; // Get distance from top of viewport
+                const floatingElementsTotalHeight = floatingControls.offsetHeight + initialBottomOffset; // Height of controls + their offset from bottom
+                const availableContainerHeight = viewportHeight - bodyTopOffset - floatingElementsTotalHeight - 16; // Subtract top offset, floating elements space, and a buffer
 
-                // Set the padding-bottom of the textarea
-                noteTextarea.style.paddingBottom = `${requiredPaddingBottom}px`;
+                // Set the height of the textarea container
+                textareaContainer.style.height = `${availableContainerHeight}px`;
+
 
                  // Also adjust message box position relative to the new floating controls position
-                 messageBox.style.bottom = `${newBottomPosition + floatingControlsHeight + 16}px`; // Position above the floating controls
+                 messageBox.style.bottom = `${newBottomPosition + floatingControls.offsetHeight + 16}px`; // Position above the floating controls
             } else {
                  // Fallback for browsers that don't support visualViewport
-                 // Keep the original floating elements position
+                 // Keep the original floating elements position and textarea behavior
                  floatingControls.style.bottom = '1.5rem';
                  wordCountElement.style.bottom = '1.5rem';
-                 // Revert textarea padding-bottom to a default if visualViewport is not supported
-                 noteTextarea.style.paddingBottom = '8rem'; // Revert to the fixed value
+                 textareaContainer.style.height = ''; // Revert to CSS/flexbox height
                  messageBox.style.bottom = '5rem'; // This might need adjustment based on actual footer height in fallback
             }
         }
