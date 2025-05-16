@@ -1,0 +1,155 @@
+/* Basic reset and box-sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif; /* Using Roboto as a common M3 font */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body takes at least full viewport height */
+}
+
+/* Material 3 inspired color variables */
+:root {
+    /* Light mode colors */
+    --md-sys-color-primary-light: #6750A4;
+    --md-sys-color-on-primary-light: #FFFFFF;
+    --md-sys-color-surface-light: #FFFBFF; /* Very faint background */
+    --md-sys-color-on-surface-light: #1C1B1F; /* Black text */
+    --md-sys-color-surface-container-low-light: #F7F2F7; /* Slightly darker surface for elements */
+
+    /* Dark mode colors */
+    --md-sys-color-primary-dark: #D0BCFF;
+    --md-sys-color-on-primary-dark: #381E72;
+    --md-sys-color-surface-dark: #000000; /* Completely black background */
+    --md-sys-color-on-surface-dark: #E6E1E5; /* Light text */
+    --md-sys-color-surface-container-low-dark: #1C1B1F; /* Slightly lighter surface for elements */
+
+    /* Common shapes - using border-radius */
+    --md-sys-shape-corner-extra-large: 28px;
+    --md-sys-shape-corner-large: 16px;
+    --md-sys-shape-corner-medium: 12px;
+    --md-sys-shape-corner-small: 8px;
+}
+
+/* Apply theme colors based on body class */
+body.light-mode {
+    background-color: var(--md-sys-color-surface-light);
+    color: var(--md-sys-color-on-surface-light);
+}
+
+body.dark-mode {
+    background-color: var(--md-sys-color-surface-dark);
+    color: var(--md-sys-color-on-surface-dark);
+}
+
+.container {
+    flex-grow: 1; /* Allow container to fill available space */
+    display: flex;
+    flex-direction: column;
+    padding: 16px; /* Sufficient padding */
+    position: relative; /* Needed for floating elements positioning */
+}
+
+#note-area {
+    flex-grow: 1; /* Text area takes remaining space */
+    border: none;
+    outline: none;
+    resize: none; /* Prevent manual resizing */
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 0; /* Padding is on the container */
+    background-color: transparent; /* Make textarea background transparent to show body background */
+    color: inherit; /* Inherit text color from body */
+}
+
+/* Style for the container holding floating elements */
+.controls-container {
+    position: fixed; /* Fixed position relative to the viewport */
+    bottom: 16px; /* Distance from bottom */
+    right: 16px; /* Distance from right */
+    left: 16px; /* Distance from left to align word count */
+    display: flex;
+    justify-content: space-between; /* Space out word count and buttons */
+    align-items: center;
+    pointer-events: none; /* Allow clicks to pass through this container */
+    z-index: 10; /* Ensure it stays on top */
+}
+
+.floating-element {
+    pointer-events: auto; /* Re-enable pointer events for the element itself */
+    padding: 8px 12px;
+    border-radius: var(--md-sys-shape-corner-large); /* Rounded corners */
+    background-color: var(--md-sys-color-surface-container-low-light); /* Use a surface color */
+    color: var(--md-sys-color-on-surface-light); /* Use on-surface color */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark-mode .floating-element {
+    background-color: var(--md-sys-color-surface-container-low-dark);
+    color: var(--md-sys-color-on-surface-dark);
+}
+
+
+.floating-buttons {
+     display: flex;
+     gap: 8px; /* Space between buttons */
+     pointer-events: auto; /* Re-enable pointer events for buttons */
+}
+
+
+.floating-button {
+    width: 56px; /* Standard FAB size */
+    height: 56px; /* Standard FAB size */
+    border-radius: 50%; /* Circular shape */
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* More prominent shadow for buttons */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease;
+    /* Material 3 Primary color for buttons */
+    background-color: var(--md-sys-color-primary-light);
+    color: var(--md-sys-color-on-primary-light); /* On primary color for icon */
+}
+
+.dark-mode .floating-button {
+    background-color: var(--md-sys-color-primary-dark);
+    color: var(--md-sys-color-on-primary-dark);
+}
+
+.floating-button:active {
+    transform: scale(0.95); /* Slight press effect */
+}
+
+.material-icons {
+    font-size: 24px; /* Standard icon size */
+}
+
+/* Adjust text area padding when controls are visible to prevent overlap */
+/* This is a simple approach; a more robust solution might involve JS */
+/* to calculate the height of the controls container and add bottom padding */
+#note-area {
+    padding-bottom: 80px; /* Add padding at the bottom to avoid text being hidden by controls */
+}
+
+/* Basic responsiveness for larger screens - adjust padding */
+@media (min-width: 600px) {
+    .container {
+        padding: 24px;
+    }
+    #note-area {
+        padding-bottom: 100px; /* Adjust padding for larger controls/screens if needed */
+    }
+     .controls-container {
+        bottom: 24px;
+        right: 24px;
+        left: 24px;
+    }
+}
