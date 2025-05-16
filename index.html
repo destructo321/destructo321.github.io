@@ -373,32 +373,23 @@
             if (window.visualViewport) {
                 const viewportHeight = window.visualViewport.height;
                 const layoutViewportHeight = window.innerHeight;
-                const keyboardHeight = layoutViewportHeight - viewportHeight;
+                // Calculate the height of the area below the visual viewport (likely the keyboard)
+                const keyboardAreaHeight = layoutViewportHeight - viewportHeight;
 
-                // Calculate the bottom position for the floating elements relative to the viewport bottom
-                // They should be keyboardHeight + initial_bottom_offset from the layout viewport bottom
+                // Calculate the desired bottom position for the floating elements
+                // This is the height of the keyboard area plus the initial desired offset from the bottom of the visual viewport
                 const initialBottomOffset = 1.5 * 16; // 1.5rem converted to pixels
-                const newBottomPosition = keyboardHeight + initialBottomOffset;
+                const newBottomPosition = keyboardAreaHeight + initialBottomOffset;
 
                 // Adjust the bottom position of the floating controls and word count
                 floatingControls.style.bottom = `${newBottomPosition}px`;
                 wordCountElement.style.bottom = `${newBottomPosition}px`; // Align word count with controls
 
-                // Calculate the required padding-bottom for the textarea
-                // This padding should be enough to accommodate the floating controls and word count
-                // at their highest position (when keyboard is fully up) + their initial offset + buffer
-                const floatingControlsHeight = floatingControls.offsetHeight;
-                // We need padding from the bottom of the textarea up to the top of the floating controls at their highest point
-                // This is roughly: keyboardHeight + initialBottomOffset + floatingControlsHeight + buffer
-                const requiredPaddingBottom = keyboardHeight + initialBottomOffset + floatingControlsHeight + 16; // Add a little extra padding
-
-                // Adjust the padding-bottom of the textarea to ensure content is visible above the controls and keyboard
-                // We will set the padding-bottom in CSS to a generous amount and rely on flex-grow to manage textarea height.
-                // The fixed positioning of controls and word count will handle their position above the keyboard.
-                // Let's remove the dynamic padding adjustment here and rely on CSS padding-bottom.
-                // noteTextarea.style.paddingBottom = `${requiredPaddingBottom}px`; // Removed this line
+                // The fixed padding-bottom on the textarea should handle the space needed.
+                // We don't need to dynamically adjust textarea padding here.
 
                  // Also adjust message box position relative to the new floating controls position
+                 const floatingControlsHeight = floatingControls.offsetHeight;
                  messageBox.style.bottom = `${newBottomPosition + floatingControlsHeight + 16}px`; // Position above the floating controls
             } else {
                  // Fallback for browsers that don't support visualViewport
