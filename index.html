@@ -12,51 +12,66 @@
         /* Custom styles for the modes */
         /* Using CSS variables for easier color management */
         :root {
-            --light-bg: #fafafa; /* A lighter shade of grey */
+            --light-bg: #fafafa; /* A lighter shade of grey for the body background */
             --light-text: #000000; /* Black */
-            --dark-bg: #000000; /* Black */
+            --dark-bg: #000000; /* Black for the body background */
             --dark-text: #80deea; /* Material 3 Light Teal for dark mode text */
-            --light-button-bg: #e0e0e0; /* Slightly lighter grey for light mode buttons */
+            --light-button-bg: #4db6ac; /* Material 3 Teal 300 for light mode buttons (darker teal) */
+            --light-button-hover-bg: #26a69a; /* Material 3 Teal 400 for hover state (even darker) */
             --dark-button-bg: #1a1a1a; /* Darker grey for dark mode buttons */
-            --accent-color-light: #6200ee; /* A Material 3-inspired accent color (Purple) for light mode toggle */
+            --dark-button-hover-bg: #2a2a2a; /* Hover state for dark mode buttons */
+            --accent-color-light: #4dd0e1; /* Material 3 Cyan 400 for light mode toggle */
             --accent-color-dark: #80deea; /* Material 3 Light Teal for dark mode toggle */
+            --focus-ring-color-light: rgba(77, 208, 225, 0.5); /* Semi-transparent Cyan 400 for light mode focus */
+            --focus-ring-color-dark: rgba(128, 222, 234, 0.5); /* Semi-transparent Light Teal for dark mode focus */
+            --floating-bg-light: rgba(224, 247, 250, 0.9); /* Very light teal with transparency for light mode floating container */
+            --floating-bg-dark: rgba(25, 35, 40, 0.9); /* A dark blue-grey with a hint of teal for dark mode floating container */
+            --textarea-bg-light: #e0f2f7; /* Very pale teal for light mode textarea background */
         }
 
         .light-mode {
-            background-color: var(--light-bg);
+            background-color: var(--light-bg); /* Body background in light mode */
             color: var(--light-text);
         }
 
         .dark-mode {
-            background-color: var(--dark-bg);
+            background-color: var(--dark-bg); /* Body background in dark mode */
             color: var(--dark-text);
         }
 
-        /* Ensure textarea fills the available space and matches mode colors */
-        /* Add padding to the bottom to prevent content from being hidden by the fixed footer */
         body {
-            /* padding-bottom will be set by JavaScript */
             margin: 0; /* Remove default body margin */
             display: flex; /* Use flexbox for body to manage layout */
             flex-direction: column; /* Stack children vertically */
             min-height: 100vh; /* Ensure body takes at least full viewport height */
             transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for mode change */
+            padding: 0; /* Remove body padding, textarea will handle it */
         }
 
         .full-height-textarea {
             flex-grow: 1; /* Allows the textarea to take up available space */
             resize: none; /* Disable manual resizing */
-            outline: none; /* Remove outline on focus */
-            padding: 1.5rem; /* Increased padding for a more spacious feel */
+            outline: none; /* Remove default outline */
+            padding: 1.5rem; /* Add padding inside the textarea */
+            /* padding-bottom will be set by JavaScript */
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* Monospace font for scratchpad feel */
-            /* Inherit colors from parent body based on mode */
-            background-color: inherit;
-            color: inherit;
+            color: inherit; /* Text color inherits from body */
             width: 100%; /* Ensure textarea takes full width */
             box-sizing: border-box; /* Include padding in the element's total width and height */
             font-size: 1.35rem; /* Slightly increased font size */
             line-height: 1.6; /* Increased line height for better readability */
+            transition: background-color 0.3s ease, padding-bottom 0.3s ease; /* Smooth transition for background and padding */
         }
+
+        /* Set the textarea background specifically based on mode */
+        .light-mode .full-height-textarea {
+             background-color: var(--textarea-bg-light); /* Very pale teal background in light mode */
+        }
+
+        .dark-mode .full-height-textarea {
+             background-color: var(--dark-bg); /* Black background in dark mode */
+        }
+
 
         /* Style for buttons (now icon buttons) */
         .app-button {
@@ -67,9 +82,10 @@
             height: 3.5rem; /* Slightly larger buttons */
             border-radius: 0.75rem; /* More rounded corners */
             font-weight: bold;
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.1s ease-in-out; /* Added transform for press effect */
             cursor: pointer; /* Indicate clickable */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            -webkit-tap-highlight-color: transparent; /* Remove default tap highlight on mobile */
         }
 
         .light-mode .app-button {
@@ -83,23 +99,43 @@
         }
 
         .app-button:hover {
-             opacity: 0.9;
+             background-color: var(--light-button-hover-bg); /* Hover state background */
              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More pronounced shadow on hover */
+        }
+
+        .dark-mode .app-button:hover {
+             background-color: var(--dark-button-hover-bg); /* Hover state background in dark mode */
+        }
+
+        .app-button:active {
+             transform: scale(0.95); /* Subtle press effect */
+             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Reduced shadow on press */
+        }
+
+        /* Focus styles for accessibility */
+        .app-button:focus-visible {
+            outline: 2px solid var(--focus-ring-color-light);
+            outline-offset: 2px;
+        }
+
+        .dark-mode .app-button:focus-visible {
+            outline-color: var(--focus-ring-color-dark);
         }
 
          /* Style for the message box */
         .message-box {
             position: fixed;
-            bottom: 5rem; /* Position above the fixed footer initially */
+            /* bottom will be set by JavaScript */
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.85); /* Slightly darker background */
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
+            font-size: 0.9rem; /* Slightly smaller font for message */
         }
 
         .message-box.show {
@@ -159,31 +195,33 @@
             transform: translateX(28px); /* Adjust translation distance */
         }
 
-        input:focus + .slider {
-            box-shadow: 0 0 1px var(--accent-color-light); /* Focus indicator */
+        input:focus-visible + .slider {
+             box-shadow: 0 0 0 3px var(--focus-ring-color-light); /* Focus ring for toggle */
         }
 
-        .dark-mode input:focus + .slider {
-             box-shadow: 0 0 1px var(--accent-color-dark); /* Material 3 Light Teal focus in dark mode */
+        .dark-mode input:focus-visible + .slider {
+             box-shadow: 0 0 0 3px var(--focus-ring-color-dark); /* Material 3 Light Teal focus in dark mode */
         }
 
 
-        /* Styles for the fixed footer container */
-        .fixed-footer {
-            position: fixed;
-            bottom: 0; /* Initially at the very bottom */
-            left: 0;
-            right: 0;
+        /* Styles for the floating controls container */
+        .floating-controls {
+            position: fixed; /* Keep fixed position relative to viewport */
+            bottom: 1.5rem; /* Distance from the bottom */
+            right: 1.5rem; /* Distance from the right */
             display: flex; /* Use flexbox to align items */
-            justify-content: space-between; /* Distribute items with space between */
             align-items: center; /* Vertically center items */
-            padding: 1.5rem; /* Increased padding for a more spacious feel */
-            background-color: inherit; /* Inherit background color from body for mode change */
-            z-index: 999; /* Ensure it's above other content but below message box */
-            width: 100%; /* Ensure footer takes full width */
-            box-sizing: border-box; /* Include padding in the element's total width */
+            padding: 1rem 1.5rem; /* Padding inside the floating container */
+            border-radius: 2rem; /* More rounded corners for the floating container */
+            background-color: var(--floating-bg-light); /* Semi-transparent background */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More pronounced shadow for floating effect */
+            z-index: 990; /* Ensure it's above the textarea */
             transition: bottom 0.3s ease-out, background-color 0.3s ease; /* Smooth transition for position and mode change */
-            /* Removed gap here, will add gap to the button group */
+            gap: 1.5rem; /* Increased space between the toggle and the button group */
+        }
+
+        .dark-mode .floating-controls {
+             background-color: var(--floating-bg-dark); /* Semi-transparent dark background */
         }
 
         /* Container for the right-aligned buttons */
@@ -192,13 +230,26 @@
             gap: 1rem; /* Add space between the buttons on the right */
         }
 
+        /* Styles for the word count element */
+        #wordCount {
+            position: fixed; /* Fixed position relative to viewport */
+            bottom: 1.5rem; /* Align with the bottom of floating controls */
+            left: 1.5rem; /* Align with the left side, matching floating controls offset */
+            padding: 0.5rem 1rem; /* Padding around the text */
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
+            color: white; /* White text */
+            border-radius: 1rem; /* Rounded corners */
+            font-size: 0.9rem; /* Smaller font size */
+            z-index: 990; /* Same z-index as floating controls */
+            transition: bottom 0.3s ease-out; /* Smooth transition for position */
+        }
 
     </style>
 </head>
 <body class="flex flex-col h-screen light-mode">
     <textarea id="noteTextarea" class="full-height-textarea"></textarea>
 
-    <div class="fixed-footer">
+    <div class="floating-controls">
         <label class="toggle-switch">
             <input type="checkbox" id="modeToggleCheckbox">
             <span class="slider"></span>
@@ -215,6 +266,8 @@
         </div>
     </div>
 
+    <div id="wordCount">0 words</div>
+
 
     <div id="messageBox" class="message-box"></div>
 
@@ -225,7 +278,8 @@
         const clearButton = document.getElementById('clearButton');
         const copyButton = document.getElementById('copyButton');
         const messageBox = document.getElementById('messageBox');
-        const fixedFooter = document.querySelector('.fixed-footer');
+        const floatingControls = document.querySelector('.floating-controls'); // Updated selector
+        const wordCountElement = document.getElementById('wordCount'); // Get the word count element
 
         // Load mode preference from localStorage
         const savedMode = localStorage.getItem('mode');
@@ -244,6 +298,7 @@
         const savedText = localStorage.getItem('noteContent');
         if (savedText) {
             noteTextarea.value = savedText;
+             updateWordCount(); // Update word count on load
         }
 
         // Function to show a message box
@@ -254,6 +309,14 @@
                 messageBox.classList.remove('show');
             }, 2000); // Hide after 2 seconds
         }
+
+        // Function to update the word count
+        function updateWordCount() {
+            const text = noteTextarea.value.trim();
+            const wordCount = text === '' ? 0 : text.split(/\s+/).filter(word => word !== '').length;
+            wordCountElement.textContent = `${wordCount} words`;
+        }
+
 
         // Event listener for mode toggle checkbox change
         modeToggleCheckbox.addEventListener('change', () => {
@@ -272,6 +335,7 @@
         clearButton.addEventListener('click', () => {
             noteTextarea.value = '';
             localStorage.removeItem('noteContent'); // Clear saved text from localStorage
+            updateWordCount(); // Update word count after clearing
         });
 
         // Event listener for copy button
@@ -285,9 +349,10 @@
             }
         });
 
-        // Save text to localStorage whenever the user types
+        // Save text to localStorage and update word count whenever the user types
         noteTextarea.addEventListener('input', () => {
             localStorage.setItem('noteContent', noteTextarea.value);
+            updateWordCount(); // Update word count on input
         });
 
         // Register the service worker
@@ -310,20 +375,29 @@
                 const layoutViewportHeight = window.innerHeight;
                 const keyboardHeight = layoutViewportHeight - viewportHeight;
 
-                // Adjust the bottom position of the fixed footer
-                fixedFooter.style.bottom = `${keyboardHeight}px`;
+                // Calculate the bottom position for the floating elements relative to the viewport bottom
+                const floatingElementsBottom = keyboardHeight + 1.5 * 16; // Keyboard height + initial bottom offset (1.5rem)
 
-                // Adjust the padding-bottom of the body to ensure textarea content is visible above the footer and keyboard
-                const footerHeight = fixedFooter.offsetHeight;
-                body.style.paddingBottom = `${footerHeight + keyboardHeight + 16}px`; // Add a little extra padding
-                 // Also adjust message box position relative to the new footer position
-                messageBox.style.bottom = `${keyboardHeight + footerHeight + 16}px`; // Position above the footer
+                // Adjust the bottom position of the floating controls and word count
+                floatingControls.style.bottom = `${floatingElementsBottom}px`;
+                wordCountElement.style.bottom = `${floatingElementsBottom}px`; // Align word count with controls
+
+                // Calculate the required padding-bottom for the textarea
+                const floatingControlsHeight = floatingControls.offsetHeight;
+                const requiredPaddingBottom = keyboardHeight + floatingControlsHeight + 1.5 * 16 + 16; // Keyboard height + controls height + initial bottom offset + buffer
+
+                // Adjust the padding-bottom of the textarea to ensure content is visible above the controls and keyboard
+                noteTextarea.style.paddingBottom = `${requiredPaddingBottom}px`;
+
+                 // Also adjust message box position relative to the new textarea padding bottom
+                messageBox.style.bottom = `${requiredPaddingBottom + 16}px`; // Position above the textarea padding
             } else {
                  // Fallback for browsers that don't support visualViewport
-                 // We'll keep the original padding-bottom and footer position
-                 body.style.paddingBottom = '6rem';
-                 fixedFooter.style.bottom = '0';
-                 messageBox.style.bottom = '5rem';
+                 // We'll keep the original padding-bottom and floating elements position
+                 noteTextarea.style.paddingBottom = 'calc(4rem + 1.5rem + 1.5rem + 16px)'; /* Estimate: controls height + initial bottom + body padding + buffer */
+                 floatingControls.style.bottom = '1.5rem';
+                 wordCountElement.style.bottom = '1.5rem';
+                 messageBox.style.bottom = 'calc(4rem + 1.5rem + 1.5rem + 16px + 16px)'; // Position above the estimated textarea padding
             }
         }
 
@@ -335,6 +409,9 @@
             // Add a regular resize listener as a fallback if visualViewport is not supported
             window.addEventListener('resize', adjustLayoutForKeyboard);
         }
+
+        // Initial word count update on load
+        updateWordCount();
 
 
     </script>
