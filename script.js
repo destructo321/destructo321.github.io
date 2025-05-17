@@ -74,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             body.className = 'light-mode';
             localStorage.setItem('themePreference', 'light-mode');
-            updateThemeToggleIcon('light-mode');
-            updateThemeColorMetaTag('light-mode');
+            updateThemeToggleIcon('light_mode');
+            updateThemeColorMetaTag('light_mode');
         }
     });
 
@@ -121,20 +121,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // This helps keep controls above the on-screen keyboard
     if (window.visualViewport) {
         const adjustControlsPosition = () => {
-            const visualViewportHeight = window.visualViewport.height;
-            const layoutViewportHeight = window.innerHeight;
+            // Get the absolute bottom position of the visual viewport
+            const visualViewportBottom = window.visualViewport.offsetTop + window.visualViewport.height;
 
-            // Calculate the difference in height (likely due to keyboard)
-            const keyboardHeight = layoutViewportHeight - visualViewportHeight;
+            // Calculate the distance from the layout viewport bottom to the visual viewport bottom
+            // This is effectively the height of the on-screen keyboard + any browser UI below the visual viewport
+            const distanceToLayoutBottom = window.innerHeight - visualViewportBottom;
 
-            // Adjust the bottom position of the controls container
-            // Add some extra padding (e.g., 16px) above the keyboard/bottom edge
-            controlsContainer.style.bottom = `${keyboardHeight + 16}px`;
+            // Position the controls container relative to the bottom of the layout viewport
+            // We want the bottom of the controls container to be 16px above the visual viewport bottom
+            // So, its distance from the layout viewport bottom will be (distanceToLayoutBottom + 16px)
+            controlsContainer.style.bottom = `${distanceToLayoutBottom + 16}px`;
+            controlsContainer.style.right = `16px`; // Ensure right position is maintained
+            controlsContainer.style.left = `16px`; // Ensure left position is maintained
 
-            // Also adjust the padding-bottom of the textarea
-            // Ensure there's enough space for the controls + padding
+            // Adjust the padding-bottom of the textarea
+            // Ensure there's enough space for the controls + padding below the text
             const controlsHeight = controlsContainer.offsetHeight; // Get the height of the controls
-             noteArea.style.paddingBottom = `${controlsHeight + keyboardHeight + 24}px`; // Add controls height, keyboard height, and extra padding
+             // The padding needed is the height of the controls plus their distance from the layout bottom, plus some extra space
+             noteArea.style.paddingBottom = `${controlsHeight + distanceToLayoutBottom + 24}px`; // Add controls height, distance from layout bottom, and extra padding
         };
 
         // Listen for visual viewport resize events
