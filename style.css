@@ -10,7 +10,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Ensure body takes at least full viewport height */
+    height: 100vh; /* Use height: 100vh to fill the viewport */
     overflow: hidden; /* Prevent body scrolling */
 }
 
@@ -55,6 +55,7 @@ body.dark-mode {
     padding: 16px; /* Sufficient padding */
     position: relative; /* Needed for floating elements positioning */
     overflow: hidden; /* Prevent container scrolling */
+    height: 100%; /* Ensure container takes full height of body */
 }
 
 #note-area {
@@ -67,23 +68,24 @@ body.dark-mode {
     padding: 0; /* Padding is on the container */
     background-color: transparent; /* Make textarea background transparent to show body background */
     color: inherit; /* Inherit text color from body */
+    overflow-y: auto; /* Allow text area to scroll its content */
     /* We will add bottom padding via JavaScript based on controls position */
     padding-bottom: 80px; /* Initial padding to prevent overlap before JS runs */
-    overflow-y: auto; /* Allow text area to scroll */
 }
 
 /* Style for the container holding floating elements */
 .controls-container {
     position: fixed; /* Fixed position relative to the viewport */
-    /* Bottom position will be set by JavaScript */
-    right: 16px; /* Distance from right */
-    left: 16px; /* Distance from left to align word count */
+    /* Bottom, right, and left positions will be set by JavaScript */
+    z-index: 10; /* Ensure it stays on top */
     display: flex;
     justify-content: space-between; /* Space out word count and buttons */
     align-items: center;
     pointer-events: none; /* Allow clicks to pass through this container */
-    z-index: 10; /* Ensure it stays on top */
-    padding-bottom: env(safe-area-inset-bottom); /* Account for notch/safe areas */
+    padding: 0 16px; /* Add horizontal padding here */
+    padding-bottom: calc(16px + env(safe-area-inset-bottom)); /* Add bottom padding and account for safe areas */
+    width: 100%; /* Ensure container spans full width to position elements */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
 .floating-element {
@@ -144,7 +146,7 @@ body.dark-mode {
         padding: 24px;
     }
      .controls-container {
-        right: 24px;
-        left: 24px;
+        padding: 0 24px; /* Adjust horizontal padding */
+        padding-bottom: calc(24px + env(safe-area-inset-bottom)); /* Adjust bottom padding */
     }
 }

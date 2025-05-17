@@ -8,8 +8,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const controlsContainer = document.querySelector('.controls-container');
 
     // Define default bottom position for controls (when keyboard is not active)
-    const defaultControlsBottom = '16px'; // Matches CSS initial value
-    const defaultNoteAreaPaddingBottom = '80px'; // Matches CSS initial value
+    // We will calculate this based on the controls container height and desired padding
+    let defaultControlsBottom = '16px'; // Initial value, will be calculated
+    let defaultNoteAreaPaddingBottom = '80px'; // Initial value, will be calculated
+
+    // Function to calculate and set default positions based on controls height
+    const calculateDefaultPositions = () => {
+        const controlsHeight = controlsContainer.offsetHeight;
+        // Default bottom is controls height + desired padding (16px) + safe area
+        defaultControlsBottom = `${controlsHeight + 16 + (window.visualViewport?.offsetTop || 0)}px`; // Add visualViewport offset as a rough safe area estimate if env() is not enough
+        // Default textarea padding bottom is controls height + padding (16px) + extra buffer (8px) + safe area
+        defaultNoteAreaPaddingBottom = `${controlsHeight + 16 + 8 + (window.visualViewport?.offsetTop || 0)}px`; // Add visualViewport offset as a rough safe area estimate
+         noteArea.style.paddingBottom = defaultNoteAreaPaddingBottom; // Apply initial padding
+    };
+
+     // Recalculate default positions on window load and resize
+    window.addEventListener('load', calculateDefaultPositions);
+    window.addEventListener('resize', calculateDefaultPositions);
+
 
     // --- Local Storage Persistence ---
     // Load note content from local storage on page load
@@ -130,7 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const distanceToLayoutBottom = window.innerHeight - visualViewportBottom;
 
             // Position controls relative to the bottom of the layout viewport
-            // Add some extra padding (e.g., 16px) above the visual viewport bottom
+            // We want the bottom of the controls container to be 16px above the visual viewport bottom
+            // So, its distance from the layout viewport bottom will be (distanceToLayoutBottom + 16px)
             controlsContainer.style.bottom = `${distanceToLayoutBottom + 16}px`;
 
             // Adjust textarea padding-bottom
@@ -145,16 +162,18 @@ document.addEventListener('DOMContentLoaded', () => {
              // We won't move the controls container, but we can add extra padding to the textarea
              noteArea.style.paddingBottom = `${controlsContainer.offsetHeight + 100}px`; // Add controls height + a significant buffer
         }
-         controlsContainer.style.right = `16px`; // Ensure right position is maintained
-         controlsContainer.style.left = `16px`; // Ensure left position is maintained
+        // Ensure horizontal positioning is handled by CSS padding on the container
+        controlsContainer.style.right = ''; // Remove JS right style
+        controlsContainer.style.left = ''; // Remove JS left style
     };
 
     // Function to reset controls position when keyboard is likely hidden
     const resetControlsPosition = () => {
         controlsContainer.style.bottom = defaultControlsBottom;
         noteArea.style.paddingBottom = defaultNoteAreaPaddingBottom;
-         controlsContainer.style.right = `16px`; // Ensure right position is maintained
-         controlsContainer.style.left = `16px`; // Ensure left position is maintained
+         // Ensure horizontal positioning is handled by CSS padding on the container
+        controlsContainer.style.right = ''; // Remove JS right style
+        controlsContainer.style.left = ''; // Remove JS left style
     };
 
 
@@ -183,6 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
          resetControlsPosition();
     }
+
+    // Initial calculation of default positions
+    calculateDefaultPositions();
 
 
     // --- PWA Service Worker Registration ---
