@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleButton = document.getElementById('theme-toggle');
     const wordCountElement = document.getElementById('word-count');
     const body = document.body;
+    const controlsContainer = document.querySelector('.controls-container');
 
     // --- Local Storage Persistence ---
     // Load note content from local storage on page load
@@ -114,6 +115,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial word count update on page load
     updateWordCount();
+
+    // --- Keyboard Visibility / Visual Viewport Handling ---
+    // Adjust the position of the controls container when the visual viewport resizes
+    // This helps keep controls above the on-screen keyboard
+    if (window.visualViewport) {
+        const adjustControlsPosition = () => {
+            const visualViewportHeight = window.visualViewport.height;
+            const layoutViewportHeight = window.innerHeight;
+
+            // Calculate the difference in height (likely due to keyboard)
+            const keyboardHeight = layoutViewportHeight - visualViewportHeight;
+
+            // Adjust the bottom position of the controls container
+            // Add some extra padding (e.g., 16px) above the keyboard/bottom edge
+            controlsContainer.style.bottom = `${keyboardHeight + 16}px`;
+
+            // Also adjust the padding-bottom of the textarea
+            // Ensure there's enough space for the controls + padding
+            const controlsHeight = controlsContainer.offsetHeight; // Get the height of the controls
+             noteArea.style.paddingBottom = `${controlsHeight + keyboardHeight + 24}px`; // Add controls height, keyboard height, and extra padding
+        };
+
+        // Listen for visual viewport resize events
+        window.visualViewport.addEventListener('resize', adjustControlsPosition);
+
+        // Initial adjustment on load
+        adjustControlsPosition();
+    } else {
+        // Fallback for browsers that don't support visualViewport (less ideal)
+        console.warn("visualViewport API not supported. Controls may not stay above keyboard reliably.");
+        // Keep the initial padding-bottom from CSS as a fallback
+    }
+
 
     // --- PWA Service Worker Registration ---
     if ('serviceWorker' in navigator) {

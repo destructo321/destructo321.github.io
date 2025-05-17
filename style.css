@@ -11,6 +11,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh; /* Ensure body takes at least full viewport height */
+    overflow: hidden; /* Prevent body scrolling */
 }
 
 /* Material 3 inspired color variables */
@@ -53,6 +54,7 @@ body.dark-mode {
     flex-direction: column;
     padding: 16px; /* Sufficient padding */
     position: relative; /* Needed for floating elements positioning */
+    overflow: hidden; /* Prevent container scrolling */
 }
 
 #note-area {
@@ -65,12 +67,15 @@ body.dark-mode {
     padding: 0; /* Padding is on the container */
     background-color: transparent; /* Make textarea background transparent to show body background */
     color: inherit; /* Inherit text color from body */
+    /* We will add bottom padding via JavaScript based on controls position */
+    padding-bottom: 80px; /* Initial padding to prevent overlap before JS runs */
+    overflow-y: auto; /* Allow text area to scroll */
 }
 
 /* Style for the container holding floating elements */
 .controls-container {
     position: fixed; /* Fixed position relative to the viewport */
-    bottom: 16px; /* Distance from bottom */
+    /* Bottom position will be set by JavaScript */
     right: 16px; /* Distance from right */
     left: 16px; /* Distance from left to align word count */
     display: flex;
@@ -78,6 +83,7 @@ body.dark-mode {
     align-items: center;
     pointer-events: none; /* Allow clicks to pass through this container */
     z-index: 10; /* Ensure it stays on top */
+    padding-bottom: env(safe-area-inset-bottom); /* Account for notch/safe areas */
 }
 
 .floating-element {
@@ -132,23 +138,12 @@ body.dark-mode {
     font-size: 24px; /* Standard icon size */
 }
 
-/* Adjust text area padding when controls are visible to prevent overlap */
-/* This is a simple approach; a more robust solution might involve JS */
-/* to calculate the height of the controls container and add bottom padding */
-#note-area {
-    padding-bottom: 80px; /* Add padding at the bottom to avoid text being hidden by controls */
-}
-
 /* Basic responsiveness for larger screens - adjust padding */
 @media (min-width: 600px) {
     .container {
         padding: 24px;
     }
-    #note-area {
-        padding-bottom: 100px; /* Adjust padding for larger controls/screens if needed */
-    }
      .controls-container {
-        bottom: 24px;
         right: 24px;
         left: 24px;
     }
