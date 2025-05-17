@@ -7,12 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const controlsContainer = document.querySelector('.controls-container');
 
-    // Get the default bottom position from CSS
-    // We'll use this to reset the position when the keyboard is hidden
-    const defaultControlsBottomCSS = getComputedStyle(controlsContainer).bottom;
-     // Get the default textarea padding-bottom from CSS
-    const defaultNoteAreaPaddingBottomCSS = getComputedStyle(noteArea).paddingBottom;
-
+    // Store the initial padding-bottom of the textarea from CSS
+    const initialNoteAreaPaddingBottom = getComputedStyle(noteArea).paddingBottom;
 
     // --- Local Storage Persistence ---
     // Load note content from local storage on page load
@@ -123,80 +119,93 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial word count update on page load
     updateWordCount();
 
-    // --- Keyboard Visibility Handling using focus/blur and visualViewport ---
+    // --- Keyboard Visibility and Layout Adjustment ---
 
-    // Function to adjust controls position when keyboard is likely visible
-    const adjustForKeyboard = () => {
+    const adjustLayout = () => {
         if (window.visualViewport) {
-            // Calculate the bottom position relative to the layout viewport bottom
-            // This accounts for the keyboard height
-            const visualViewportBottom = window.visualViewport.offsetTop + window.visualViewport.height;
-            const distanceToLayoutBottom = window.innerHeight - visualViewportBottom;
+            const visualViewportHeight = window.visualViewport.height;
+            const visualViewportBottom = window.visualViewport.offsetTop + visualViewportHeight;
+            const layoutViewportHeight = window.innerHeight;
 
-            // Set the bottom style to the distance from the layout viewport bottom + desired padding
-            controlsContainer.style.bottom = `${distanceToLayoutBottom + 16}px`;
+            // Calculate the space below the visual viewport (likely keyboard + browser UI)
+            const spaceBelowVisualViewport = layoutViewportHeight - visualViewportBottom;
 
-             // Adjust textarea padding-bottom to make space for controls and keyboard
+            // Adjust the bottom position of the controls container
+            // It should be positioned relative to the bottom of the visual viewport
+            // Add some padding (e.g., 16px) above the visual viewport bottom
+            controlsContainer.style.bottom = `${spaceBelowVisualViewport + 16}px`;
+
+            // Calculate the available height for the textarea
+            // This is the visual viewport height minus the height of the controls container
+            // and any desired padding above the controls.
             const controlsHeight = controlsContainer.offsetHeight;
-            noteArea.style.paddingBottom = `${controlsHeight + distanceToLayoutBottom + 24}px`; // Controls height + distance + extra padding
+            const availableHeightForTextarea = visualViewportHeight - controlsHeight - 24; // 24px extra padding above controls
+
+            // Set the height of the textarea
+            noteArea.style.height = `${availableHeightForTextarea}px`;
+            // Also ensure padding bottom is set to 0 when height is fixed by JS
+            noteArea.style.paddingBottom = '0';
 
 
         } else {
             // Fallback for browsers that don't support visualViewport
-            console.warn("visualViewport API not supported. Using fallback keyboard handling.");
-            // Add a significant padding to the textarea as a fallback
-            noteArea.style.paddingBottom = `${controlsContainer.offsetHeight + 150}px`; // Add controls height + a larger buffer
+            console.warn("visualViewport API not supported. Layout adjustment may be limited.");
+            // Revert textarea height to default (flex-grow) and apply initial padding
+            noteArea.style.height = ''; // Remove inline height style
+            noteArea.style.paddingBottom = initialNoteAreaPaddingBottom;
              // Controls position remains the default fixed bottom set in CSS
+             controlsContainer.style.bottom = `16px`; // Ensure default bottom is set
         }
     };
 
-    // Function to reset controls position when keyboard is likely hidden
-    const resetControlsPosition = () => {
-        // Reset bottom style to the default value from CSS
-        controlsContainer.style.bottom = defaultControlsBottomCSS;
-        // Reset textarea padding-bottom to the default value from CSS
-        noteArea.style.paddingBottom = defaultNoteAreaPaddingBottomCSS;
+    const resetLayout = () => {
+        // Reset controls bottom position to default CSS value
+        controlsContainer.style.bottom = `16px`; // Reset to CSS default
+        // Reset textarea height and padding bottom to default CSS/flexbox behavior
+        noteArea.style.height = ''; // Remove inline height style
+        noteArea.style.paddingBottom = initialNoteAreaPaddingBottom;
     };
 
 
     // Listen for focus and blur events on the textarea
-    noteArea.addEventListener('focus', adjustForKeyboard);
-    noteArea.addEventListener('blur', resetControlsPosition);
+    noteArea.addEventListener('focus', adjustLayout);
+    noteArea.addEventListener('blur', resetLayout);
+
 
      // Also listen for visualViewport resize in case keyboard behaviour is different
      // or for device orientation changes while keyboard is active
      if (window.visualViewport) {
          window.visualViewport.addEventListener('resize', () => {
-             // Only adjust if the textarea is currently focused
-             if (document.activeElement === noteArea) {
-                 adjustForKeyboard();
+             // Only adjust if the textarea is currently focused or if the visual viewport height changes significantly
+             // (e.g., device rotation)
+             if (document.activeElement === noteArea || window.visualViewport.height !== window.innerHeight) {
+                  adjustLayout();
              } else {
-                 // If not focused, ensure controls are in default position
-                 resetControlsPosition();
+                 // If not focused and visual viewport height matches layout, reset
+                 resetLayout();
              }
          });
      }
 
      // Listen for window resize as well, in case visualViewport resize isn't enough
-     // This helps with device rotation or split-screen views
      window.addEventListener('resize', () => {
-          // Only adjust if the textarea is currently focused
-         if (document.activeElement === noteArea) {
-             adjustForKeyboard();
+          // Only adjust if the textarea is currently focused or if the window height changes significantly
+         if (document.activeElement === noteArea || window.innerHeight !== window.visualViewport?.height) {
+             adjustLayout();
          } else {
-             // If not focused, ensure controls are in default position
-             resetControlsPosition();
+              resetLayout();
          }
      });
 
 
-    // Initial check in case the textarea is autofocused on load
+    // Initial layout adjustment on load
     // Use a small delay to ensure elements are rendered and styles are applied
     setTimeout(() => {
-        if (document.activeElement === noteArea) {
-            adjustForKeyboard();
+        // Check if textarea is focused or if initial visual viewport height is different
+        if (document.activeElement === noteArea || (window.visualViewport && window.visualViewport.height !== window.innerHeight)) {
+             adjustLayout();
         } else {
-             resetControlsPosition();
+              resetLayout();
         }
     }, 100); // Adjust delay if needed
 

@@ -11,7 +11,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh; /* Use height: 100vh to fill the viewport */
-    overflow: hidden; /* Prevent body scrolling */
+    overflow: hidden; /* Absolutely prevent body scrolling */
 }
 
 /* Material 3 inspired color variables */
@@ -52,43 +52,42 @@ body.dark-mode {
     flex-grow: 1; /* Allow container to fill available space */
     display: flex;
     flex-direction: column;
-    padding: 16px; /* Sufficient padding */
+    padding: 16px; /* Sufficient padding around the content */
     position: relative; /* Needed for floating elements positioning context */
-    overflow: hidden; /* Prevent container scrolling */
+    overflow: hidden; /* Absolutely prevent container scrolling */
     height: 100%; /* Ensure container takes full height of body */
 }
 
 #note-area {
-    flex-grow: 1; /* Text area takes remaining space */
+    flex-grow: 1; /* Text area takes remaining space by default */
     border: none;
     outline: none;
     resize: none; /* Prevent manual resizing */
     font-size: 1rem;
     line-height: 1.5;
-    padding: 0; /* Padding is on the container */
+    padding: 0; /* Padding is on the container, not the textarea */
     background-color: transparent; /* Make textarea background transparent to show body background */
     color: inherit; /* Inherit text color from body */
-    overflow-y: auto; /* Allow text area to scroll its content */
-    /* Default padding-bottom to make space for controls when keyboard is NOT up */
-    padding-bottom: 80px; /* Adjust based on controls height + desired spacing */
+    overflow-y: auto; /* Allow text area content to scroll */
+    /* Initial height will be handled by flex-grow, adjusted by JS when keyboard is up */
+    /* Initial padding-bottom will be handled by JS to make space for controls */
 }
 
 /* Style for the container holding floating elements */
 .controls-container {
     position: fixed; /* Fixed position relative to the viewport */
-    /* Default bottom position when keyboard is NOT up */
-    bottom: 16px; /* Distance from the bottom of the viewport */
     z-index: 10; /* Ensure it stays on top */
     display: flex;
     justify-content: space-between; /* Space out word count and buttons */
     align-items: center;
     pointer-events: none; /* Allow clicks to pass through this container */
-    padding: 0 16px; /* Add horizontal padding here */
-    padding-bottom: env(safe-area-inset-bottom); /* Account for notch/safe areas below controls */
-    width: 100%; /* Ensure container spans full width to position elements */
-    box-sizing: border-box; /* Include padding in the element's total width and height */
-    /* Add a slight transition for smoother movement when keyboard appears/disappears */
-    transition: bottom 0.3s ease;
+    width: 100%; /* Ensure container spans full width */
+    box-sizing: border-box; /* Include padding in the element's total width */
+    /* Bottom position will be controlled by JavaScript */
+    /* Add padding to the right of the buttons */
+    padding: 0 16px; /* Horizontal padding */
+    padding-bottom: env(safe-area-inset-bottom); /* Account for safe areas below controls */
+    transition: bottom 0.3s ease; /* Smooth transition when bottom changes */
 }
 
 .floating-element {
@@ -111,6 +110,8 @@ body.dark-mode {
      display: flex;
      gap: 8px; /* Space between buttons */
      pointer-events: auto; /* Re-enable pointer events for buttons */
+     /* Add padding to the right of the buttons */
+     padding-right: 8px; /* Adjust as needed */
 }
 
 
@@ -150,10 +151,9 @@ body.dark-mode {
     }
      .controls-container {
         padding: 0 24px; /* Adjust horizontal padding */
-        bottom: 24px; /* Adjust default bottom position */
          padding-bottom: env(safe-area-inset-bottom); /* Account for safe areas */
     }
-     #note-area {
-         padding-bottom: 100px; /* Adjust default padding-bottom for larger screens */
-     }
+    .floating-buttons {
+        padding-right: 12px; /* Adjust right padding for larger screens */
+    }
 }
