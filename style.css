@@ -53,7 +53,7 @@ body.dark-mode {
     display: flex;
     flex-direction: column;
     padding: 16px; /* Sufficient padding */
-    position: relative; /* Needed for floating elements positioning */
+    position: relative; /* Needed for floating elements positioning context */
     overflow: hidden; /* Prevent container scrolling */
     height: 100%; /* Ensure container takes full height of body */
 }
@@ -69,23 +69,26 @@ body.dark-mode {
     background-color: transparent; /* Make textarea background transparent to show body background */
     color: inherit; /* Inherit text color from body */
     overflow-y: auto; /* Allow text area to scroll its content */
-    /* We will add bottom padding via JavaScript based on controls position */
-    padding-bottom: 80px; /* Initial padding to prevent overlap before JS runs */
+    /* Default padding-bottom to make space for controls when keyboard is NOT up */
+    padding-bottom: 80px; /* Adjust based on controls height + desired spacing */
 }
 
 /* Style for the container holding floating elements */
 .controls-container {
     position: fixed; /* Fixed position relative to the viewport */
-    /* Bottom, right, and left positions will be set by JavaScript */
+    /* Default bottom position when keyboard is NOT up */
+    bottom: 16px; /* Distance from the bottom of the viewport */
     z-index: 10; /* Ensure it stays on top */
     display: flex;
     justify-content: space-between; /* Space out word count and buttons */
     align-items: center;
     pointer-events: none; /* Allow clicks to pass through this container */
     padding: 0 16px; /* Add horizontal padding here */
-    padding-bottom: calc(16px + env(safe-area-inset-bottom)); /* Add bottom padding and account for safe areas */
+    padding-bottom: env(safe-area-inset-bottom); /* Account for notch/safe areas below controls */
     width: 100%; /* Ensure container spans full width to position elements */
     box-sizing: border-box; /* Include padding in the element's total width and height */
+    /* Add a slight transition for smoother movement when keyboard appears/disappears */
+    transition: bottom 0.3s ease;
 }
 
 .floating-element {
@@ -147,6 +150,10 @@ body.dark-mode {
     }
      .controls-container {
         padding: 0 24px; /* Adjust horizontal padding */
-        padding-bottom: calc(24px + env(safe-area-inset-bottom)); /* Adjust bottom padding */
+        bottom: 24px; /* Adjust default bottom position */
+         padding-bottom: env(safe-area-inset-bottom); /* Account for safe areas */
     }
+     #note-area {
+         padding-bottom: 100px; /* Adjust default padding-bottom for larger screens */
+     }
 }
