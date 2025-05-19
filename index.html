@@ -61,6 +61,7 @@
              padding: 1rem; /* Add some padding around the main content */
              display: flex; /* Use flexbox to contain the textarea-container */
              flex-direction: column; /* Arrange children in a column */
+             /* padding-bottom will be set dynamically by JS to account for keyboard */
         }
 
         /* Container for the textarea with border and rounded corners */
@@ -166,6 +167,8 @@
         const wordCountSpan = document.getElementById('word-count');
         const body = document.body;
         const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        const mainElement = document.querySelector('main'); // Get the main element
+        const bottomControls = document.querySelector('.bottom-controls'); // Get the controls element
 
 
         // --- Local Storage for Mode ---
@@ -181,6 +184,29 @@
             updateModeIcon('light-mode');
             updateThemeColor('light-mode');
         }
+
+        // --- Dynamic Padding Adjustment for Keyboard ---
+        function adjustForKeyboard() {
+            if (mainElement && bottomControls && window.visualViewport) {
+                const viewportHeight = window.innerHeight; // Layout viewport height
+                const visualViewportHeight = window.visualViewport.height; // Visual viewport height
+                const controlsHeight = bottomControls.offsetHeight; // Height of the controls
+
+                // Calculate the space taken by the keyboard
+                const keyboardHeight = viewportHeight - visualViewportHeight;
+
+                // Set the padding-bottom of the main content
+                // This pushes the scrollable content up by the keyboard height + controls height + a small buffer
+                mainElement.style.paddingBottom = `${keyboardHeight + controlsHeight + 10}px`; // Added 10px buffer
+            }
+        }
+
+        // Adjust padding on load and when the visual viewport resizes (keyboard appears/disappears)
+        window.addEventListener('load', adjustForKeyboard);
+        if (window.visualViewport) {
+            window.visualViewport.onresize = adjustForKeyboard;
+        }
+
 
         // --- Word Count Functionality ---
         textarea.addEventListener('input', () => {
