@@ -1,159 +1,237 @@
-/* Basic reset and box-sizing */
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* style.css */
+:root {
+    /* Material 3 Expressive Inspired Colors */
+    /* Light Theme */
+    --light-bg: #FFFBFE; /* A very faint background */
+    --light-text: #1C1B1F; /* Primary text color */
+    --light-surface-container-highest: #E6E0E9; /* Text area background */
+    --light-outline: #79747E; /* Outline for text area */
+    --light-primary-button-bg: #EADDFF; /* Primary button background */
+    --light-primary-button-text: #21005D; /* Primary button text */
+    --light-secondary-button-bg: #F2B8B5; /* Secondary button (e.g. clear) bg */
+    --light-secondary-button-text: #3E0500; /* Secondary button text */
+    --light-icon-color: #49454F;
+
+    /* Dark Theme */
+    --dark-bg: #141218; /* Completely black as requested, slightly adjusted for M3 feel */
+    --dark-text: #E6E1E5;
+    --dark-surface-container-highest: #36343B;
+    --dark-outline: #938F99;
+    --dark-primary-button-bg: #4F378B;
+    --dark-primary-button-text: #EADDFF;
+    --dark-secondary-button-bg: #CC7C73;
+    --dark-secondary-button-text: #FFEAE7;
+    --dark-icon-color: #CAC4D0;
+
+    /* Shapes & Typography */
+    --shape-corner-medium: 12px; /* Rounded corners */
+    --shape-corner-large: 16px;
+    --font-body: 'Roboto Flex', sans-serif;
 }
+
+/* Apply a transition to color changes for a smoother theme switch */
+body, textarea, button, .controls-footer, .word-count {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 
 body {
-    font-family: 'Roboto', sans-serif; /* Using Roboto as a common M3 font */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
+    font-family: var(--font-body);
+    margin: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Use height: 100vh to fill the viewport */
-    overflow: hidden; /* Absolutely prevent body scrolling */
-}
-
-/* Material 3 inspired color variables */
-:root {
-    /* Light mode colors */
-    --md-sys-color-primary-light: #6750A4;
-    --md-sys-color-on-primary-light: #FFFFFF;
-    --md-sys-color-surface-light: #FFFBFF; /* Very faint background */
-    --md-sys-color-on-surface-light: #1C1B1F; /* Black text */
-    --md-sys-color-surface-container-low-light: #F7F2F7; /* Slightly darker surface for elements */
-
-    /* Dark mode colors */
-    --md-sys-color-primary-dark: #D0BCFF;
-    --md-sys-color-on-primary-dark: #381E72;
-    --md-sys-color-surface-dark: #000000; /* Completely black background */
-    --md-sys-color-on-surface-dark: #E6E1E5; /* Light text */
-    --md-sys-color-surface-container-low-dark: #1C1B1F; /* Slightly lighter surface for elements */
-
-    /* Common shapes - using border-radius */
-    --md-sys-shape-corner-extra-large: 28px;
-    --md-sys-shape-corner-large: 16px;
-    --md-sys-shape-corner-medium: 12px;
-    --md-sys-shape-corner-small: 8px;
-}
-
-/* Apply theme colors based on body class */
-body.light-mode {
-    background-color: var(--md-sys-color-surface-light);
-    color: var(--md-sys-color-on-surface-light);
+    min-height: 100vh; /* Full viewport height */
+    background-color: var(--light-bg);
+    color: var(--light-text);
 }
 
 body.dark-mode {
-    background-color: var(--md-sys-color-surface-dark);
-    color: var(--md-sys-color-on-surface-dark);
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
 }
 
-.container {
-    flex-grow: 1; /* Allow container to fill available space */
+.app-container {
     display: flex;
     flex-direction: column;
-    padding: 16px; /* Sufficient padding around the content */
-    position: relative; /* Needed for floating elements positioning context */
-    overflow: hidden; /* Absolutely prevent container scrolling */
-    height: 100%; /* Ensure container takes full height of body */
+    flex-grow: 1; /* Allows app-container to fill body */
+    padding: 16px;
+    padding-bottom: 100px; /* Add padding to avoid overlap with fixed footer */
+    box-sizing: border-box;
 }
 
-#note-area {
-    flex-grow: 1; /* Text area takes remaining space by default */
-    border: none;
-    outline: none;
-    resize: none; /* Prevent manual resizing */
-    font-size: 1rem;
-    line-height: 1.5;
-    padding: 0; /* Padding is on the container, not the textarea */
-    background-color: transparent; /* Make textarea background transparent to show body background */
-    color: inherit; /* Inherit text color from body */
-    overflow-y: auto; /* Allow text area content to scroll */
-    /* Initial height will be handled by flex-grow, adjusted by JS when keyboard is up */
-    /* Initial padding-bottom will be handled by JS to make space for controls */
-}
-
-/* Style for the container holding floating elements */
-.controls-container {
-    position: fixed; /* Fixed position relative to the viewport */
-    z-index: 10; /* Ensure it stays on top */
+.main-content {
+    flex-grow: 1;
     display: flex;
-    justify-content: space-between; /* Space out word count and buttons */
-    align-items: center;
-    pointer-events: none; /* Allow clicks to pass through this container */
-    width: 100%; /* Ensure container spans full width */
-    box-sizing: border-box; /* Include padding in the element's total width */
-    /* Bottom position will be controlled by JavaScript */
-    /* Add padding to the right of the buttons */
-    padding: 0 16px; /* Horizontal padding */
-    padding-bottom: env(safe-area-inset-bottom); /* Account for safe areas below controls */
-    transition: bottom 0.3s ease; /* Smooth transition when bottom changes */
+    flex-direction: column;
 }
 
-.floating-element {
-    pointer-events: auto; /* Re-enable pointer events for the element itself */
-    padding: 8px 12px;
-    border-radius: var(--md-sys-shape-corner-large); /* Rounded corners */
-    background-color: var(--md-sys-color-surface-container-low-light); /* Use a surface color */
-    color: var(--md-sys-color-on-surface-light); /* Use on-surface color */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    transition: background-color 0.3s ease, color 0.3s ease;
+#noteArea {
+    flex-grow: 1; /* Textarea fills available space */
+    font-family: var(--font-body);
+    font-weight: 700; /* Bold */
+    font-size: 16px;
+    padding: 16px;
+    border: 2px solid var(--light-outline);
+    border-radius: var(--shape-corner-medium);
+    background-color: var(--light-surface-container-highest);
+    color: var(--light-text);
+    resize: none; /* Disable manual resizing */
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 200px; /* Minimum height */
 }
 
-.dark-mode .floating-element {
-    background-color: var(--md-sys-color-surface-container-low-dark);
-    color: var(--md-sys-color-on-surface-dark);
+body.dark-mode #noteArea {
+    border-color: var(--dark-outline);
+    background-color: var(--dark-surface-container-highest);
+    color: var(--dark-text);
 }
 
-
-.floating-buttons {
-     display: flex;
-     gap: 8px; /* Space between buttons */
-     pointer-events: auto; /* Re-enable pointer events for buttons */
-     /* Add padding to the right of the buttons */
-     padding-right: 8px; /* Adjust as needed */
-}
-
-
-.floating-button {
-    width: 56px; /* Standard FAB size */
-    height: 56px; /* Standard FAB size */
-    border-radius: 50%; /* Circular shape */
-    border: none;
+.controls-footer {
+    position: fixed; /* Always visible, even with keyboard */
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    padding: 12px 16px;
+    background-color: var(--light-bg); /* Match body background */
+    border-top: 1px solid var(--light-outline);
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    z-index: 1000; /* Ensure it's above other content */
+}
+
+body.dark-mode .controls-footer {
+    background-color: var(--dark-bg);
+    border-top: 1px solid var(--dark-outline);
+    box-shadow: 0 -2px 5px rgba(255,255,255,0.05);
+}
+
+.word-count {
+    font-family: var(--font-body);
+    font-weight: 200; /* Extra Light */
+    font-size: 14px;
+    color: var(--light-text);
+}
+
+body.dark-mode .word-count {
+    color: var(--dark-text);
+}
+
+.button-group {
+    display: flex;
+    gap: 8px; /* Space between buttons */
+}
+
+.button-group button {
+    font-family: var(--font-body);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--shape-corner-large); /* Fully rounded for icon buttons */
+    padding: 10px; /* Adequate touch target */
     cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* More prominent shadow for buttons */
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease;
-    /* Material 3 Primary color for buttons */
-    background-color: var(--md-sys-color-primary-light);
-    color: var(--md-sys-color-on-primary-light); /* On primary color for icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--light-icon-color);
+    transition: background-color 0.2s ease;
 }
 
-.dark-mode .floating-button {
-    background-color: var(--md-sys-color-primary-dark);
-    color: var(--md-sys-color-on-primary-dark);
+.button-group button:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+.button-group button:active {
+    background-color: rgba(0,0,0,0.1);
 }
 
-.floating-button:active {
-    transform: scale(0.95); /* Slight press effect */
+
+body.dark-mode .button-group button {
+    color: var(--dark-icon-color);
 }
 
-.material-icons {
-    font-size: 24px; /* Standard icon size */
+body.dark-mode .button-group button:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+body.dark-mode .button-group button:active {
+    background-color: rgba(255,255,255,0.15);
 }
 
-/* Basic responsiveness for larger screens - adjust padding */
-@media (min-width: 600px) {
-    .container {
-        padding: 24px;
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24;
+  font-size: 24px; /* Standard icon size */
+}
+
+
+/* Toast Notification */
+.toast {
+    visibility: hidden;
+    min-width: 200px;
+    background-color: #333; /* Dark background for contrast */
+    color: #fff;
+    text-align: center;
+    border-radius: var(--shape-corner-medium);
+    padding: 16px;
+    position: fixed;
+    z-index: 1001; /* Above footer */
+    left: 50%;
+    bottom: 120px; /* Position above the controls footer */
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
+}
+
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 130px; /* Animate upwards slightly */
+}
+
+body.dark-mode .toast {
+    background-color: var(--dark-surface-container-highest);
+    color: var(--dark-text);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .app-container {
+        padding: 12px;
+        padding-bottom: 90px; /* Adjust for smaller screens */
     }
-     .controls-container {
-        padding: 0 24px; /* Adjust horizontal padding */
-         padding-bottom: env(safe-area-inset-bottom); /* Account for safe areas */
+
+    #noteArea {
+        font-size: 15px;
+        padding: 12px;
     }
-    .floating-buttons {
-        padding-right: 12px; /* Adjust right padding for larger screens */
+
+    .controls-footer {
+        padding: 10px 12px;
+    }
+
+    .word-count {
+        font-size: 13px;
+    }
+
+    .button-group button {
+        padding: 8px;
+    }
+     .material-symbols-outlined {
+        font-size: 22px;
+    }
+
+    .toast {
+        bottom: 110px; /* Adjust toast for smaller screen */
+        min-width: 180px;
+        padding: 12px;
+    }
+    .toast.show {
+        bottom: 120px;
     }
 }

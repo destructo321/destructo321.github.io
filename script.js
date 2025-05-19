@@ -1,224 +1,163 @@
+// script.js
 document.addEventListener('DOMContentLoaded', () => {
-    const noteArea = document.getElementById('note-area');
-    const clearButton = document.getElementById('clear-button');
-    const copyButton = document.getElementById('copy-button');
-    const themeToggleButton = document.getElementById('theme-toggle');
-    const wordCountElement = document.getElementById('word-count');
-    const body = document.body;
-    const controlsContainer = document.querySelector('.controls-container');
+    // DOM Elements
+    const noteArea = document.getElementById('noteArea');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = themeToggleBtn.querySelector('.material-symbols-outlined');
+    const copyBtn = document.getElementById('copyBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const wordCountDisplay = document.getElementById('wordCount');
+    const toastNotification = document.getElementById('toastNotification');
 
-    // Store the initial padding-bottom of the textarea from CSS
-    const initialNoteAreaPaddingBottom = getComputedStyle(noteArea).paddingBottom;
+    // --- Persisted State ---
+    const NOTE_STORAGE_KEY = 'quickNotesContent';
+    const THEME_STORAGE_KEY = 'quickNotesTheme';
 
-    // --- Local Storage Persistence ---
-    // Load note content from local storage on page load
-    const savedNote = localStorage.getItem('scratchpadNote');
-    if (savedNote) {
-        noteArea.value = savedNote;
-        updateWordCount(); // Update word count for loaded content
-    }
+    // --- Event Listeners ---
 
-    // Save note content to local storage whenever it changes
+    // Note Area: Save content and update word count on input
     noteArea.addEventListener('input', () => {
-        localStorage.setItem('scratchpadNote', noteArea.value);
-        updateWordCount(); // Update word count on input
+        localStorage.setItem(NOTE_STORAGE_KEY, noteArea.value);
+        updateWordCount();
     });
 
-    // Load theme preference from local storage
-    const savedTheme = localStorage.getItem('themePreference');
-    if (savedTheme) {
-        body.className = savedTheme; // Apply saved theme class
-        updateThemeToggleIcon(savedTheme); // Update the icon
-        updateThemeColorMetaTag(savedTheme); // Update theme color meta tag
-    } else {
-        // Default to light mode if no preference is saved
-        body.className = 'light-mode';
-        updateThemeToggleIcon('light-mode');
-        updateThemeColorMetaTag('light-mode');
+    // Theme Toggle Button
+    themeToggleBtn.addEventListener('click', toggleTheme);
+
+    // Copy Button
+    copyBtn.addEventListener('click', copyText);
+
+    // Clear Button
+    clearBtn.addEventListener('click', clearText);
+
+    // --- Functions ---
+
+    // Word Count
+    function updateWordCount() {
+        const text = noteArea.value.trim();
+        const words = text === '' ? 0 : text.split(/\s+/).length;
+        wordCountDisplay.textContent = `Words: ${words}`;
+    }
+
+    // Theme Management
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
+        updateThemeIcon(isDarkMode);
+        updateMetaThemeColor(isDarkMode);
+    }
+
+    function applyInitialTheme() {
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        let isDarkMode = false;
+
+        if (savedTheme) {
+            isDarkMode = savedTheme === 'dark';
+        } else {
+            // Fallback to system preference if no theme is saved
+            isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+        updateThemeIcon(isDarkMode);
+        updateMetaThemeColor(isDarkMode);
+    }
+
+    function updateThemeIcon(isDarkMode) {
+        if (themeIcon) {
+            themeIcon.textContent = isDarkMode ? 'dark_mode' : 'light_mode';
+            themeToggleBtn.setAttribute('aria-label', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
+            themeToggleBtn.setAttribute('title', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+    }
+
+    function updateMetaThemeColor(isDarkMode) {
+        // Update the meta theme-color tag for browser UI consistency
+        let lightThemeMeta = document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: light)"]');
+        let darkThemeMeta = document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: dark)"]');
+        
+        // If these specific media query metas don't exist, try to find a general one or create it.
+        // For simplicity with the provided HTML, we'll assume they exist.
+        // A more robust solution might involve a single theme-color meta tag and updating its content.
+        // However, the current HTML setup with media queries is also a valid approach.
+        // The PWA manifest theme_color will be used on app launch.
+        // This JS update is for when the theme is changed *while the app is open*.
+        
+        // To ensure the browser picks up the change immediately, we can have a primary meta tag
+        // and update its content. Let's try that.
+        let primaryThemeColorMeta = document.querySelector('meta[name="theme-color"]:not([media])');
+        if (!primaryThemeColorMeta) {
+            primaryThemeColorMeta = document.createElement('meta');
+            primaryThemeColorMeta.name = "theme-color";
+            document.head.appendChild(primaryThemeColorMeta);
+        }
+        primaryThemeColorMeta.content = isDarkMode ? '#141218' : '#FFFBFE'; // Match CSS dark/light bg
     }
 
 
-    // --- Functionality ---
-
-    // Clear button functionality
-    clearButton.addEventListener('click', () => {
-        noteArea.value = '';
-        localStorage.removeItem('scratchpadNote'); // Also clear from local storage
-        updateWordCount(); // Reset word count
-        // Optional: Focus the textarea after clearing
-        // noteArea.focus(); // Avoid focusing immediately after clear if it brings up keyboard again
-    });
-
-    // Copy button functionality
-    copyButton.addEventListener('click', async () => {
+    // Copy Text
+    async function copyText() {
+        if (!noteArea.value) {
+            showToast('Nothing to copy!');
+            return;
+        }
         try {
             await navigator.clipboard.writeText(noteArea.value);
-            // Optional: Provide user feedback (e.g., a temporary message)
-            console.log('Content copied to clipboard!'); // For debugging
-            // A simple way to show feedback could be changing the icon temporarily
-            const copyIcon = copyButton.querySelector('.material-icons');
-            copyIcon.textContent = 'check'; // Change icon to a checkmark
-            setTimeout(() => {
-                copyIcon.textContent = 'content_copy'; // Change back after a delay
-            }, 1500);
+            showToast('Copied to clipboard!');
         } catch (err) {
-            console.error('Failed to copy: ', err);
-            // Optional: Show an error message to the user
-        }
-    });
-
-    // Theme toggle functionality
-    themeToggleButton.addEventListener('click', () => {
-        if (body.classList.contains('light-mode')) {
-            body.className = 'dark-mode';
-            localStorage.setItem('themePreference', 'dark-mode');
-            updateThemeToggleIcon('dark-mode');
-            updateThemeColorMetaTag('dark-mode');
-        } else {
-            body.className = 'light-mode';
-            localStorage.setItem('themePreference', 'light-mode');
-            updateThemeToggleIcon('light_mode');
-            updateThemeColorMetaTag('light_mode');
-        }
-    });
-
-    // Function to update the theme toggle icon
-    function updateThemeToggleIcon(currentTheme) {
-        const icon = themeToggleButton.querySelector('.material-icons');
-        if (currentTheme === 'light-mode') {
-            icon.textContent = 'dark_mode'; // Show dark mode icon in light mode
-        } else {
-            icon.textContent = 'light_mode'; // Show light mode icon in dark mode
+            console.error('Failed to copy text: ', err);
+            showToast('Failed to copy.');
         }
     }
 
-     // Function to update the theme-color meta tag for PWA
-    function updateThemeColorMetaTag(currentTheme) {
-        const metaThemeColor = document.querySelector('meta[name=theme-color]');
-        if (currentTheme === 'light-mode') {
-            // Use a color that works well with the light mode header/status bar
-             metaThemeColor.setAttribute('content', '#FFFBFF'); // Light surface color
-        } else {
-             // Use a color that works well with the dark mode header/status bar
-            metaThemeColor.setAttribute('content', '#000000'); // Black background color
+    // Clear Text
+    function clearText() {
+        noteArea.value = '';
+        localStorage.removeItem(NOTE_STORAGE_KEY); // Also clear from storage
+        updateWordCount();
+        showToast('Notes cleared!');
+    }
+
+    // Toast Notification
+    let toastTimeout;
+    function showToast(message) {
+        if (toastNotification) {
+            toastNotification.textContent = message;
+            toastNotification.classList.add('show');
+            clearTimeout(toastTimeout); // Clear existing timeout if any
+            toastTimeout = setTimeout(() => {
+                toastNotification.classList.remove('show');
+            }, 3000); // Hide after 3 seconds
         }
     }
 
-
-    // Function to update word count
-    function updateWordCount() {
-        const text = noteArea.value.trim(); // Remove leading/trailing whitespace
-        if (text === '') {
-            wordCountElement.textContent = '0 words';
-        } else {
-            const words = text.split(/\s+/).filter(word => word.length > 0); // Split by whitespace and filter empty strings
-            wordCountElement.textContent = `${words.length} words`;
+    // Load saved notes
+    function loadSavedNotes() {
+        const savedNotes = localStorage.getItem(NOTE_STORAGE_KEY);
+        if (savedNotes) {
+            noteArea.value = savedNotes;
         }
     }
 
-    // Initial word count update on page load
-    updateWordCount();
-
-    // --- Keyboard Visibility and Layout Adjustment ---
-
-    const adjustLayout = () => {
-        if (window.visualViewport) {
-            const visualViewportHeight = window.visualViewport.height;
-            const visualViewportBottom = window.visualViewport.offsetTop + visualViewportHeight;
-            const layoutViewportHeight = window.innerHeight;
-
-            // Calculate the space below the visual viewport (likely keyboard + browser UI)
-            const spaceBelowVisualViewport = layoutViewportHeight - visualViewportBottom;
-
-            // Adjust the bottom position of the controls container
-            // It should be positioned relative to the bottom of the visual viewport
-            // Add some padding (e.g., 16px) above the visual viewport bottom
-            controlsContainer.style.bottom = `${spaceBelowVisualViewport + 16}px`;
-
-            // Calculate the available height for the textarea
-            // This is the visual viewport height minus the height of the controls container
-            // and any desired padding above the controls.
-            const controlsHeight = controlsContainer.offsetHeight;
-            const availableHeightForTextarea = visualViewportHeight - controlsHeight - 24; // 24px extra padding above controls
-
-            // Set the height of the textarea
-            noteArea.style.height = `${availableHeightForTextarea}px`;
-            // Also ensure padding bottom is set to 0 when height is fixed by JS
-            noteArea.style.paddingBottom = '0';
-
-
-        } else {
-            // Fallback for browsers that don't support visualViewport
-            console.warn("visualViewport API not supported. Layout adjustment may be limited.");
-            // Revert textarea height to default (flex-grow) and apply initial padding
-            noteArea.style.height = ''; // Remove inline height style
-            noteArea.style.paddingBottom = initialNoteAreaPaddingBottom;
-             // Controls position remains the default fixed bottom set in CSS
-             controlsContainer.style.bottom = `16px`; // Ensure default bottom is set
-        }
-    };
-
-    const resetLayout = () => {
-        // Reset controls bottom position to default CSS value
-        controlsContainer.style.bottom = `16px`; // Reset to CSS default
-        // Reset textarea height and padding bottom to default CSS/flexbox behavior
-        noteArea.style.height = ''; // Remove inline height style
-        noteArea.style.paddingBottom = initialNoteAreaPaddingBottom;
-    };
-
-
-    // Listen for focus and blur events on the textarea
-    noteArea.addEventListener('focus', adjustLayout);
-    noteArea.addEventListener('blur', resetLayout);
-
-
-     // Also listen for visualViewport resize in case keyboard behaviour is different
-     // or for device orientation changes while keyboard is active
-     if (window.visualViewport) {
-         window.visualViewport.addEventListener('resize', () => {
-             // Only adjust if the textarea is currently focused or if the visual viewport height changes significantly
-             // (e.g., device rotation)
-             if (document.activeElement === noteArea || window.visualViewport.height !== window.innerHeight) {
-                  adjustLayout();
-             } else {
-                 // If not focused and visual viewport height matches layout, reset
-                 resetLayout();
-             }
-         });
-     }
-
-     // Listen for window resize as well, in case visualViewport resize isn't enough
-     window.addEventListener('resize', () => {
-          // Only adjust if the textarea is currently focused or if the window height changes significantly
-         if (document.activeElement === noteArea || window.innerHeight !== window.visualViewport?.height) {
-             adjustLayout();
-         } else {
-              resetLayout();
-         }
-     });
-
-
-    // Initial layout adjustment on load
-    // Use a small delay to ensure elements are rendered and styles are applied
-    setTimeout(() => {
-        // Check if textarea is focused or if initial visual viewport height is different
-        if (document.activeElement === noteArea || (window.visualViewport && window.visualViewport.height !== window.innerHeight)) {
-             adjustLayout();
-        } else {
-              resetLayout();
-        }
-    }, 100); // Adjust delay if needed
-
+    // --- Initialization ---
+    loadSavedNotes();
+    applyInitialTheme();
+    updateWordCount(); // Initial word count
 
     // --- PWA Service Worker Registration ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js')
+            navigator.serviceWorker.register('sw.js')
                 .then(registration => {
-                    console.log('Service Worker registered: ', registration);
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
                 })
                 .catch(error => {
-                    console.error('Service Worker registration failed: ', error);
+                    console.log('ServiceWorker registration failed: ', error);
                 });
         });
     }
