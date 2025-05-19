@@ -27,6 +27,8 @@
             height: 100vh; /* Ensure body takes full viewport height */
             display: flex; /* Use flexbox for body */
             flex-direction: column; /* Arrange children in a column */
+            overflow: hidden; /* Prevent body scroll, main will handle scrolling */
+            /* padding-bottom will be set dynamically by JS to account for controls and keyboard */
         }
 
         /* Light mode styles (Greenish-Blue Material 3 inspired) */
@@ -47,11 +49,13 @@
             font-weight: 700; /* Roboto Flex Bold */
             outline: none; /* Remove default outline */
             resize: none; /* Disable textarea resize handle */
-            flex-grow: 1; /* Allow textarea to grow and fill space */
+            flex-grow: 1; /* Allow textarea to grow and fill space within its container */
             padding: 1rem; /* Keep a small padding inside textarea */
             background-color: transparent; /* Ensure transparency to show body background */
             display: block; /* Ensure textarea takes up available space in flex container */
             font-size: 1.1rem; /* Slightly larger font size */
+            width: 100%; /* Ensure textarea takes full width of its container */
+            height: 100%; /* Ensure textarea takes full height of its container */
         }
 
         /* Main content area - uses flexbox to manage layout */
@@ -61,7 +65,7 @@
              padding: 1rem; /* Add some padding around the main content */
              display: flex; /* Use flexbox to contain the textarea-container */
              flex-direction: column; /* Arrange children in a column */
-             /* padding-bottom will be set dynamically by JS to account for controls */
+             /* No padding-bottom needed here, body padding handles spacing */
         }
 
         /* Container for the textarea with border and rounded corners */
@@ -84,8 +88,7 @@
             transition: background-color 0.3s ease;
             flex-shrink: 0; /* Prevent controls from shrinking */
             width: 100%; /* Ensure controls take full width */
-            /* Position will be set dynamically by JS */
-            position: absolute; /* Use absolute positioning for dynamic bottom adjustment */
+            position: fixed; /* Use fixed positioning */
             bottom: 0; /* Default position at the bottom */
             left: 0;
         }
@@ -192,7 +195,7 @@
 
         // --- Dynamic Adjustment for Keyboard and Controls ---
         function adjustLayoutForKeyboard() {
-            if (mainElement && bottomControls && window.visualViewport) {
+            if (bottomControls && window.visualViewport) {
                 const visualViewportHeight = window.visualViewport.height; // Visual viewport height
                 const layoutViewportHeight = window.innerHeight; // Layout viewport height
                 const controlsHeight = bottomControls.offsetHeight; // Height of the controls
@@ -200,12 +203,15 @@
                 // Calculate the space taken by the keyboard
                 const keyboardHeight = layoutViewportHeight - visualViewportHeight;
 
-                // Adjust the bottom position of the controls
+                // Adjust the padding-bottom of the body to make space for controls and keyboard
+                // This pushes the content up, preventing overlap
+                body.style.paddingBottom = `${controlsHeight + keyboardHeight}px`;
+
+                // Ensure the controls stay at the bottom of the visual viewport
                 bottomControls.style.bottom = `${keyboardHeight}px`;
 
-                // Adjust the padding-bottom of the main content to ensure textarea clears controls
-                // We add a small buffer to the controls height
-                mainElement.style.paddingBottom = `${controlsHeight + 10}px`; // 10px buffer
+                 // The main element's height will be automatically adjusted by flexbox
+                 // to fill the remaining space above the body padding.
             }
         }
 
