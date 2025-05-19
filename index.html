@@ -3,26 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-    <title>Scratchpad</title>
+    <title>Keat's Scratchpad</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100;8..144,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oi&family=Roboto+Flex:opsz,wght@8..144,100;8..144,800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
+    <header class="title-bar">
+        <h1 class="app-title">Scratch</h1>
+        <button id="theme-toggle" class="control-button theme-toggle-button">
+            <span class="material-icons">brightness_4</span>
+        </button>
+    </header>
+
     <div class="container">
-        <textarea id="note-area" placeholder="..."></textarea>
+        <textarea id="note-area" placeholder="Jot down your thoughts here..."></textarea>
 
         <div class="controls-container">
             <div id="word-count" class="word-count">0 words</div>
             <div class="buttons-container">
-                <button id="theme-toggle" class="control-button">
-                    <span class="material-icons">brightness_4</span> </button>
                 <button id="clear-button" class="control-button">
-                    <span class="material-icons">clear</span> </button>
+                    <span class="material-icons">clear</span>
+                </button>
                 <button id="copy-button" class="control-button">
-                    <span class="material-icons">content_copy</span> </button>
+                    <span class="material-icons">content_copy</span>
+                </button>
             </div>
         </div>
     </div>
