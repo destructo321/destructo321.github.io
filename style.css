@@ -8,16 +8,16 @@ body {
     min-height: 100vh; /* Ensure body takes at least full viewport height */
 }
 
-/* Light Mode Colors (Material 3 inspired faint background) */
+/* Light Mode Colors (Green-based Material 3 palette) */
 body.light-mode {
-    background-color: #f3edf7; /* Surface - Faint purple */
-    color: #1c1b1f; /* On Surface - Dark text */
+    background-color: #f0fbf4; /* Surface - Very faint green */
+    color: #1a1c1a; /* On Surface - Dark green-grey text */
 }
 
-/* Dark Mode Colors (Completely black background as requested) */
+/* Dark Mode Colors (Completely black background as requested, with complementary text) */
 body.dark-mode {
     background-color: #000000; /* Surface - Completely black */
-    color: #e6e1e5; /* On Surface - Light text */
+    color: #e2e3e1; /* On Surface - Light grey text */
 }
 
 /* Title Bar Styling */
@@ -34,8 +34,8 @@ body.dark-mode {
 
 /* Dark mode title bar colors */
 body.dark-mode .title-bar {
-    background-color: #4cd9d9; /* Tertiary Dark */
-    color: #003738; /* On Tertiary Dark */
+    background-color: #4cd9d9; /* Tertiary Dark - Cyan */
+    color: #003738; /* On Tertiary Dark - Dark Cyan */
 }
 
 
@@ -63,11 +63,11 @@ body.dark-mode .title-bar {
 }
 
 .theme-toggle-button:hover {
-     background-color: rgba(234, 221, 255, 0.1); /* Subtle hover effect */
+     background-color: rgba(0, 106, 106, 0.1); /* Subtle hover effect using Tertiary */
 }
 
 .theme-toggle-button:active {
-    background-color: rgba(234, 221, 255, 0.2); /* Subtle active effect */
+    background-color: rgba(0, 106, 106, 0.2); /* Subtle active effect using Tertiary */
 }
 
 /* Dark mode theme toggle button hover/active */
@@ -95,7 +95,7 @@ body.dark-mode .theme-toggle-button:active {
     flex-grow: 1; /* Allow textarea to grow and fill space */
     width: 100%; /* Take full width */
     padding: 20px; /* Increased padding */
-    border: 2px solid #0060a8; /* Primary - Blue outline */
+    border: 2px solid #008752; /* Primary - Green outline */
     border-radius: 16px; /* Rounded corners, Material 3 Medium shape */
     font-family: 'VT323', monospace; /* Changed font to VT323 */
     font-weight: 400; /* VT323 typically only has one weight */
@@ -110,13 +110,13 @@ body.dark-mode .theme-toggle-button:active {
 
 /* Dark mode text area colors */
 body.dark-mode #note-area {
-    border-color: #a8c7fa; /* Primary Dark - Light Blue outline */
+    border-color: #79f8cc; /* Primary Container Dark - Light Green outline */
     color: #00ff00; /* Matrix Green text color */
 }
 
 /* Placeholder text color */
 body.light-mode #note-area::placeholder {
-    color: rgba(28, 27, 31, 0.6); /* Dark text with opacity */
+    color: rgba(26, 28, 26, 0.6); /* Dark green-grey text with opacity */
 }
 
 body.dark-mode #note-area::placeholder {
@@ -181,16 +181,16 @@ body.dark-mode #note-area::placeholder {
 }
 
 #copy-button {
-    background-color: #0060a8; /* Primary - Blue */
+    background-color: #008752; /* Primary - Green */
     color: #ffffff; /* On Primary - White text for contrast */
 }
 
 #copy-button:hover {
-    background-color: #004a8b; /* Darker primary on hover */
+    background-color: #006d41; /* Darker primary on hover */
 }
 
 #copy-button:active {
-    background-color: #00396c; /* Even darker primary on active */
+    background-color: #005230; /* Even darker primary on active */
 }
 
 
@@ -210,16 +210,16 @@ body.dark-mode #clear-button:active {
 
 
 body.dark-mode #copy-button {
-    background-color: #a8c7fa; /* Primary Dark */
-    color: #0a2342; /* On Primary Dark */
+    background-color: #79f8cc; /* Primary Container Dark - Light Green */
+    color: #002115; /* On Primary Container Dark - Dark Green */
 }
 
 body.dark-mode #copy-button:hover {
-    background-color: #89b6fa; /* Lighter primary dark on hover */
+    background-color: #5cdbb0; /* Darker Primary Container Dark on hover */
 }
 
 body.dark-mode #copy-button:active {
-    background-color: #649ff8; /* Even lighter primary dark on active */
+    background-color: #3ed195; /* Even darker Primary Container Dark on active */
 }
 
 
