@@ -1,237 +1,166 @@
-/* style.css */
-:root {
-    /* Material 3 Expressive Inspired Colors */
-    /* Light Theme */
-    --light-bg: #FFFBFE; /* A very faint background */
-    --light-text: #1C1B1F; /* Primary text color */
-    --light-surface-container-highest: #E6E0E9; /* Text area background */
-    --light-outline: #79747E; /* Outline for text area */
-    --light-primary-button-bg: #EADDFF; /* Primary button background */
-    --light-primary-button-text: #21005D; /* Primary button text */
-    --light-secondary-button-bg: #F2B8B5; /* Secondary button (e.g. clear) bg */
-    --light-secondary-button-text: #3E0500; /* Secondary button text */
-    --light-icon-color: #49454F;
-
-    /* Dark Theme */
-    --dark-bg: #141218; /* Completely black as requested, slightly adjusted for M3 feel */
-    --dark-text: #E6E1E5;
-    --dark-surface-container-highest: #36343B;
-    --dark-outline: #938F99;
-    --dark-primary-button-bg: #4F378B;
-    --dark-primary-button-text: #EADDFF;
-    --dark-secondary-button-bg: #CC7C73;
-    --dark-secondary-button-text: #FFEAE7;
-    --dark-icon-color: #CAC4D0;
-
-    /* Shapes & Typography */
-    --shape-corner-medium: 12px; /* Rounded corners */
-    --shape-corner-large: 16px;
-    --font-body: 'Roboto Flex', sans-serif;
-}
-
-/* Apply a transition to color changes for a smoother theme switch */
-body, textarea, button, .controls-footer, .word-count {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-
+/* Basic Reset and Body Styling */
 body {
-    font-family: var(--font-body);
     margin: 0;
+    font-family: 'Roboto Flex', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Full viewport height */
-    background-color: var(--light-bg);
-    color: var(--light-text);
+    min-height: 100vh; /* Ensure body takes at least full viewport height */
 }
 
+/* Light Mode Colors (Material 3 inspired faint background) */
+body.light-mode {
+    background-color: #f3edf7; /* A very faint purple */
+    color: #1c1b1f; /* Dark text */
+}
+
+/* Dark Mode Colors (Completely black background as requested) */
 body.dark-mode {
-    background-color: var(--dark-bg);
-    color: var(--dark-text);
+    background-color: #000000; /* Completely black */
+    color: #e6e1e5; /* Light text */
 }
 
-.app-container {
+.container {
+    flex-grow: 1; /* Allow container to take up available space */
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Allows app-container to fill body */
-    padding: 16px;
-    padding-bottom: 100px; /* Add padding to avoid overlap with fixed footer */
-    box-sizing: border-box;
+    padding: 16px; /* Add some padding around the content */
+    box-sizing: border-box; /* Include padding in element's total width and height */
 }
 
-.main-content {
-    flex-grow: 1;
+/* Text Area Styling */
+#note-area {
+    flex-grow: 1; /* Allow textarea to grow and fill space */
+    width: 100%; /* Take full width */
+    padding: 16px;
+    border: 2px solid #6750a4; /* Bold outline, Material 3 Primary color */
+    border-radius: 16px; /* Rounded corners, Material 3 Medium shape */
+    font-family: 'Roboto Flex', sans-serif;
+    font-variation-settings: 'wght' 800; /* Extrabold weight */
+    font-size: 1rem;
+    resize: none; /* Prevent manual resizing */
+    outline: none; /* Remove default outline on focus */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    margin-bottom: 16px; /* Space between textarea and controls */
+    background-color: transparent; /* Make background transparent to show body background */
+    color: inherit; /* Inherit text color from body */
+}
+
+/* Placeholder text color */
+body.light-mode #note-area::placeholder {
+    color: rgba(28, 27, 31, 0.6); /* Dark text with opacity */
+}
+
+body.dark-mode #note-area::placeholder {
+    color: rgba(230, 225, 229, 0.6); /* Light text with opacity */
+}
+
+
+/* Controls and Word Count Container */
+.controls-container {
     display: flex;
-    flex-direction: column;
-}
-
-#noteArea {
-    flex-grow: 1; /* Textarea fills available space */
-    font-family: var(--font-body);
-    font-weight: 700; /* Bold */
-    font-size: 16px;
-    padding: 16px;
-    border: 2px solid var(--light-outline);
-    border-radius: var(--shape-corner-medium);
-    background-color: var(--light-surface-container-highest);
-    color: var(--light-text);
-    resize: none; /* Disable manual resizing */
-    box-sizing: border-box;
+    justify-content: space-between; /* Space out word count and buttons */
+    align-items: flex-end; /* Align items to the bottom */
     width: 100%;
-    min-height: 200px; /* Minimum height */
-}
-
-body.dark-mode #noteArea {
-    border-color: var(--dark-outline);
-    background-color: var(--dark-surface-container-highest);
-    color: var(--dark-text);
-}
-
-.controls-footer {
-    position: fixed; /* Always visible, even with keyboard */
+    padding: 0 16px 16px 16px; /* Padding at the bottom */
+    box-sizing: border-box;
+    /* Position fixed to stay at the bottom, adjusting for keyboard */
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background-color: var(--light-bg); /* Match body background */
-    border-top: 1px solid var(--light-outline);
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-    z-index: 1000; /* Ensure it's above other content */
+    background-color: inherit; /* Inherit background to blend with body */
+    /* Add a subtle shadow or border to separate from textarea content if needed */
+    /* box-shadow: 0 -2px 5px rgba(0,0,0,0.1); */
 }
 
-body.dark-mode .controls-footer {
-    background-color: var(--dark-bg);
-    border-top: 1px solid var(--dark-outline);
-    box-shadow: 0 -2px 5px rgba(255,255,255,0.05);
-}
-
-.word-count {
-    font-family: var(--font-body);
-    font-weight: 200; /* Extra Light */
-    font-size: 14px;
-    color: var(--light-text);
-}
-
-body.dark-mode .word-count {
-    color: var(--dark-text);
-}
-
-.button-group {
+.buttons-container {
     display: flex;
     gap: 8px; /* Space between buttons */
 }
 
-.button-group button {
-    font-family: var(--font-body);
-    background-color: transparent;
+/* Word Count Styling */
+.word-count {
+    font-family: 'Roboto Flex', sans-serif;
+    font-variation-settings: 'wght' 100; /* Extra Light weight */
+    font-size: 0.9rem;
+    color: inherit; /* Inherit text color from body */
+}
+
+/* Control Buttons Styling (Colourful Material 3 inspired) */
+.control-button {
+    background-color: #eaddff; /* Material 3 Secondary container */
+    color: #21005d; /* Material 3 On Secondary container */
     border: none;
-    border-radius: var(--shape-corner-large); /* Fully rounded for icon buttons */
-    padding: 10px; /* Adequate touch target */
+    border-radius: 20px; /* Material 3 Full shape */
+    padding: 12px 16px;
+    font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--light-icon-color);
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle shadow */
 }
 
-.button-group button:hover {
-    background-color: rgba(0,0,0,0.05);
-}
-.button-group button:active {
-    background-color: rgba(0,0,0,0.1);
+.control-button:hover {
+    background-color: #e8def8; /* Slightly darker secondary container on hover */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
-
-body.dark-mode .button-group button {
-    color: var(--dark-icon-color);
+.control-button:active {
+    background-color: #d0bcff; /* Material 3 Secondary color on active */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-body.dark-mode .button-group button:hover {
-    background-color: rgba(255,255,255,0.1);
-}
-body.dark-mode .button-group button:active {
-    background-color: rgba(255,255,255,0.15);
-}
-
-
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24;
-  font-size: 24px; /* Standard icon size */
+/* Dark mode button colors */
+body.dark-mode .control-button {
+    background-color: #4f378b; /* Material 3 Secondary container dark */
+    color: #eaddff; /* Material 3 On Secondary container dark */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
-
-/* Toast Notification */
-.toast {
-    visibility: hidden;
-    min-width: 200px;
-    background-color: #333; /* Dark background for contrast */
-    color: #fff;
-    text-align: center;
-    border-radius: var(--shape-corner-medium);
-    padding: 16px;
-    position: fixed;
-    z-index: 1001; /* Above footer */
-    left: 50%;
-    bottom: 120px; /* Position above the controls footer */
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
+body.dark-mode .control-button:hover {
+    background-color: #6750a4; /* Material 3 Secondary dark on hover */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
 
-.toast.show {
-    visibility: visible;
-    opacity: 1;
-    bottom: 130px; /* Animate upwards slightly */
+body.dark-mode .control-button:active {
+    background-color: #b69df8; /* Material 3 Secondary dark on active */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
-body.dark-mode .toast {
-    background-color: var(--dark-surface-container-highest);
-    color: var(--dark-text);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+/* Style for the icons within the buttons */
+.control-button .material-icons {
+    font-size: 20px; /* Adjust icon size */
 }
-
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
-    .app-container {
-        padding: 12px;
-        padding-bottom: 90px; /* Adjust for smaller screens */
+    .container {
+        padding: 8px; /* Reduce padding on smaller screens */
     }
 
-    #noteArea {
-        font-size: 15px;
-        padding: 12px;
+    #note-area {
+        padding: 12px; /* Reduce textarea padding */
+        border-radius: 12px; /* Slightly smaller border radius */
     }
 
-    .controls-footer {
-        padding: 10px 12px;
+    .controls-container {
+        padding: 0 8px 8px 8px; /* Reduce padding */
+    }
+
+    .control-button {
+        padding: 10px 14px; /* Adjust button padding */
+        border-radius: 18px; /* Slightly smaller border radius */
+    }
+
+    .control-button .material-icons {
+        font-size: 18px; /* Adjust icon size */
     }
 
     .word-count {
-        font-size: 13px;
-    }
-
-    .button-group button {
-        padding: 8px;
-    }
-     .material-symbols-outlined {
-        font-size: 22px;
-    }
-
-    .toast {
-        bottom: 110px; /* Adjust toast for smaller screen */
-        min-width: 180px;
-        padding: 12px;
-    }
-    .toast.show {
-        bottom: 120px;
+        font-size: 0.8rem; /* Reduce font size */
     }
 }
+

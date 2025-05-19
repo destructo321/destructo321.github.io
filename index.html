@@ -2,308 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Scratchpad</title>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Scratchpad">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#E8F8F5">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <title>Keat's Scratchpad</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100;8..144,800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100;8..144,700&display=swap" rel="stylesheet">
-
-    <style>
-        /* Basic styling for body and main container */
-        body {
-            font-family: 'Roboto Flex', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for mode change */
-            margin: 0; /* Remove default body margin */
-            padding: 0; /* Remove default body padding */
-            height: 100vh; /* Ensure body takes full viewport height */
-            display: flex; /* Use flexbox for body */
-            flex-direction: column; /* Arrange children in a column */
-            overflow: hidden; /* Prevent body scroll */
-        }
-
-        /* Light mode styles (Greenish-Blue Material 3 inspired) */
-        body.light-mode {
-            background-color: #E8F8F5; /* Lighter Surface Light (Greenish-Blue) */
-            color: #00201C; /* On Surface Light (Dark Greenish-Blue) */
-        }
-
-        /* Dark mode styles (Greenish-Blue Material 3 inspired) */
-        body.dark-mode {
-            background-color: #00201C; /* Surface Dark (Dark Greenish-Blue) */
-            color: #A7EDE0; /* On Surface Dark (Light Greenish-Blue) */
-        }
-
-        /* Container for the main content and controls */
-        .app-content-container {
-            flex-grow: 1; /* Allow this container to take up space */
-            display: flex; /* Use flexbox to arrange main and controls */
-            flex-direction: column; /* Stack main and controls vertically */
-            overflow: hidden; /* Hide overflowing content */
-            /* Height will be set dynamically by JS */
-        }
-
-
-        /* Custom styles for the textarea */
-        #note-textarea {
-            font-family: 'Roboto Flex', sans-serif;
-            font-weight: 700; /* Roboto Flex Bold */
-            outline: none; /* Remove default outline */
-            resize: none; /* Disable textarea resize handle */
-            flex-grow: 1; /* Allow textarea to grow and fill space within its container */
-            padding: 1rem; /* Keep a small padding inside textarea */
-            background-color: transparent; /* Ensure transparency to show body background */
-            display: block; /* Ensure textarea takes up available space in flex container */
-            font-size: 1.1rem; /* Slightly larger font size */
-            width: 100%; /* Ensure textarea takes full width of its container */
-            height: 100%; /* Ensure textarea takes full height of its container */
-        }
-
-        /* Main content area - uses flexbox to manage layout */
-        main {
-             flex-grow: 1; /* Allow main to take up available space within app-content-container */
-             overflow-y: auto; /* Enable scrolling within the main content */
-             padding: 1rem; /* Add some padding around the main content */
-             display: flex; /* Use flexbox to contain the textarea-container */
-             flex-direction: column; /* Arrange children in a column */
-        }
-
-        /* Container for the textarea with border and rounded corners */
-        .textarea-container {
-            flex-grow: 1; /* Allow container to grow */
-            border: 4px solid #77928C; /* Border color (Adjusted for greenish-blue) */
-            border-radius: 0.5rem; /* Rounded corners */
-            overflow: hidden; /* Hide overflowing content */
-            display: flex; /* Use flex to make textarea fill the container */
-        }
-
-        /* Container for controls and word count */
-        .bottom-controls {
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10; /* Ensure controls are above other content if needed */
-            backdrop-filter: blur(5px); /* Optional: adds a subtle blur effect */
-            transition: background-color 0.3s ease;
-            flex-shrink: 0; /* Prevent controls from shrinking */
-            width: 100%; /* Ensure controls take full width */
-            /* No fixed or absolute positioning here, flexbox handles it */
-        }
-
-        /* Light mode control bar background (Semi-transparent M3 Surface) */
-        body.light-mode .bottom-controls {
-             background-color: rgba(232, 248, 245, 0.8); /* Semi-transparent Lighter Surface Light */
-        }
-
-        /* Dark mode control bar background (Semi-transparent M3 Surface) */
-        body.dark-mode .bottom-controls {
-             background-color: rgba(0, 32, 28, 0.8); /* Semi-transparent Surface Dark */
-        }
-
-
-        /* Style for buttons (Greenish-Blue Material 3 inspired) */
-        .control-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem;
-            border-radius: 9999px; /* Fully rounded */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-            transition: background-color 0.2s ease, transform 0.1s ease, color 0.2s ease;
-            cursor: pointer;
-        }
-
-        .control-button:active {
-            transform: scale(0.95); /* Add press effect */
-        }
-
-        /* Light mode button styles (M3 Primary Container - Greenish-Blue) */
-        body.light-mode .control-button {
-            background-color: #88D8C0; /* Primary Container Light */
-            color: #00201C; /* On Primary Container Light */
-        }
-
-        /* Dark mode button styles (M3 Primary Container - Greenish-Blue) */
-        body.dark-mode .control-button {
-            background-color: #005147; /* Primary Container Dark */
-            color: #A7EDE0; /* On Primary Container Dark */
-        }
-
-        /* Word count style */
-        #word-count {
-            font-family: 'Roboto Flex', sans-serif;
-            font-weight: 100; /* Roboto Flex Extra Light */
-            font-size: 0.875rem; /* Small text */
-        }
-
-    </style>
+    <link rel="manifest" href="manifest.json">
 </head>
-<body class="light-mode">
-    <div class="app-content-container">
-        <main class="container mx-auto">
-            <div class="textarea-container">
-                <textarea
-                    id="note-textarea"
-                    class="w-full h-full"
-                    placeholder="Start writing here..."
-                ></textarea>
-            </div>
-        </main>
+<body>
 
-        <div class="bottom-controls">
-            <div id="word-count" class="ml-4">0 words</div>
-            <div class="flex space-x-4 mr-4">
-                <button id="mode-toggle" class="control-button">
-                    <span class="material-icons">brightness_4</span>
-                </button>
+    <div class="container">
+        <textarea id="note-area" placeholder="Jot down your thoughts here..."></textarea>
+
+        <div class="controls-container">
+            <div id="word-count" class="word-count">0 words</div>
+            <div class="buttons-container">
+                <button id="theme-toggle" class="control-button">
+                    <span class="material-icons">brightness_4</span> </button>
                 <button id="clear-button" class="control-button">
-                    <span class="material-icons">delete</span>
-                </button>
+                    <span class="material-icons">clear</span> </button>
                 <button id="copy-button" class="control-button">
-                    <span class="material-icons">content_copy</span>
-                </button>
+                    <span class="material-icons">content_copy</span> </button>
             </div>
         </div>
     </div>
 
+    <script src="script.js"></script>
     <script>
-        const textarea = document.getElementById('note-textarea');
-        const clearButton = document.getElementById('clear-button');
-        const copyButton = document.getElementById('copy-button');
-        const modeToggleButton = document.getElementById('mode-toggle');
-        const wordCountSpan = document.getElementById('word-count');
-        const body = document.body;
-        const themeColorMeta = document.querySelector('meta[name="theme-color']");
-        const appContentContainer = document.querySelector('.app-content-container'); // Get the new container
-
-
-        // --- Local Storage for Mode ---
-        const currentMode = localStorage.getItem('theme-mode');
-        if (currentMode) {
-            body.className = currentMode; // Apply saved mode class
-            updateModeIcon(currentMode);
-            // Update theme color meta tag based on mode
-            updateThemeColor(currentMode);
-        } else {
-            // Default to light mode if no preference is saved
-            body.className = 'light-mode';
-            updateModeIcon('light-mode');
-            updateThemeColor('light-mode');
-        }
-
-        // --- Dynamic Adjustment for Keyboard and Controls ---
-        function adjustLayoutForKeyboard() {
-            if (appContentContainer && window.visualViewport) {
-                const visualViewportHeight = window.visualViewport.height; // Visual viewport height
-                // Set the height of the app content container to the visual viewport height
-                // This makes the container shrink when the keyboard is open
-                appContentContainer.style.height = `${visualViewportHeight}px`;
-            }
-        }
-
-        // Adjust layout on load and when the visual viewport resizes (keyboard appears/disappears)
-        window.addEventListener('load', adjustLayoutForKeyboard);
-        if (window.visualViewport) {
-            window.visualViewport.onresize = adjustLayoutForKeyboard;
-        }
-
-
-        // --- Word Count Functionality ---
-        textarea.addEventListener('input', () => {
-            const text = textarea.value.trim();
-            const wordCount = text === '' ? 0 : text.split(/\s+/).length;
-            wordCountSpan.textContent = `${wordCount} words`;
-
-            // Save content to localStorage on input
-            localStorage.setItem('scratchpad-content', textarea.value);
-        });
-
-        // Load saved content on page load
-        const savedContent = localStorage.getItem('scratchpad-content');
-        if (savedContent !== null) {
-            textarea.value = savedContent;
-            // Trigger input event manually to update word count
-            textarea.dispatchEvent(new Event('input'));
-        }
-
-
-        // --- Clear Button Functionality ---
-        clearButton.addEventListener('click', () => {
-            textarea.value = '';
-            textarea.dispatchEvent(new Event('input')); // Update word count
-             localStorage.removeItem('scratchpad-content'); // Clear saved content
-        });
-
-        // --- Copy Button Functionality ---
-        copyButton.addEventListener('click', async () => {
-            try {
-                await navigator.clipboard.writeText(textarea.value);
-                // Optional: Provide user feedback (e.g., a temporary message)
-                console.log('Content copied to clipboard!');
-            } catch (err) {
-                console.error('Failed to copy content: ', err);
-            }
-        });
-
-        // --- Mode Toggle Functionality ---
-        modeToggleButton.addEventListener('click', () => {
-            if (body.classList.contains('light-mode')) {
-                body.className = 'dark-mode';
-                localStorage.setItem('theme-mode', 'dark-mode');
-                updateModeIcon('dark-mode');
-                updateThemeColor('dark-mode');
-            } else {
-                body.className = 'light-mode';
-                localStorage.setItem('theme-mode', 'light-mode');
-                updateModeIcon('light-mode');
-                updateThemeColor('light-mode');
-            }
-        });
-
-        // Function to update the mode toggle icon
-        function updateModeIcon(mode) {
-            const iconSpan = modeToggleButton.querySelector('.material-icons');
-            if (mode === 'light-mode') {
-                iconSpan.textContent = 'brightness_4'; // Icon for dark mode toggle
-            } else {
-                iconSpan.textContent = 'brightness_high'; // Icon for light mode toggle
-            }
-        }
-
-        // Function to update the theme color meta tag
-        function updateThemeColor(mode) {
-            if (themeColorMeta) {
-                if (mode === 'light-mode') {
-                    themeColorMeta.setAttribute('content', '#E8F8F5'); /* Lighter Surface Light */
-                } else {
-                    themeColorMeta.setAttribute('content', '#00201C'); /* Surface Dark */
-                }
-            }
-        }
-
-
-        // --- Service Worker Registration ---
+        // Register the service worker
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('Service Worker registered: ', registration);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed: ', error);
-                    });
-            });
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker Registered', reg))
+                .catch(err => console.error('Service Worker Registration Failed', err));
         }
-
     </script>
 </body>
 </html>

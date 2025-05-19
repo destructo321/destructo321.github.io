@@ -1,164 +1,117 @@
-// script.js
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
-    const noteArea = document.getElementById('noteArea');
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeIcon = themeToggleBtn.querySelector('.material-symbols-outlined');
-    const copyBtn = document.getElementById('copyBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const wordCountDisplay = document.getElementById('wordCount');
-    const toastNotification = document.getElementById('toastNotification');
+    const noteArea = document.getElementById('note-area');
+    const themeToggle = document.getElementById('theme-toggle');
+    const clearButton = document.getElementById('clear-button');
+    const copyButton = document.getElementById('copy-button');
+    const wordCountDisplay = document.getElementById('word-count');
+    const body = document.body;
 
-    // --- Persisted State ---
-    const NOTE_STORAGE_KEY = 'quickNotesContent';
-    const THEME_STORAGE_KEY = 'quickNotesTheme';
+    // --- Local Storage for Persistence ---
+    // Load saved note from local storage on page load
+    const savedNote = localStorage.getItem('scratchpadNote');
+    if (savedNote) {
+        noteArea.value = savedNote;
+        updateWordCount(); // Update word count for loaded text
+    }
 
-    // --- Event Listeners ---
+    // Load saved theme preference
+    const savedTheme = localStorage.getItem('themePreference');
+    if (savedTheme) {
+        body.classList.add(savedTheme);
+    } else {
+        // Default to light mode if no preference is saved
+        body.classList.add('light-mode');
+    }
 
-    // Note Area: Save content and update word count on input
+    // Save note to local storage whenever text area content changes
     noteArea.addEventListener('input', () => {
-        localStorage.setItem(NOTE_STORAGE_KEY, noteArea.value);
-        updateWordCount();
+        localStorage.setItem('scratchpadNote', noteArea.value);
+        updateWordCount(); // Update word count on input
     });
 
-    // Theme Toggle Button
-    themeToggleBtn.addEventListener('click', toggleTheme);
+    // --- Theme Toggle Functionality ---
+    themeToggle.addEventListener('click', () => {
+        if (body.classList.contains('light-mode')) {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('themePreference', 'dark-mode');
+            // Change icon to reflect dark mode (e.g., sun icon)
+            themeToggle.querySelector('.material-icons').textContent = 'brightness_high';
+        } else {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('themePreference', 'light-mode');
+            // Change icon to reflect light mode (e.g., moon icon)
+            themeToggle.querySelector('.material-icons').textContent = 'brightness_4';
+        }
+    });
 
-    // Copy Button
-    copyBtn.addEventListener('click', copyText);
+    // Set initial icon based on current theme
+    if (body.classList.contains('dark-mode')) {
+        themeToggle.querySelector('.material-icons').textContent = 'brightness_high';
+    } else {
+        themeToggle.querySelector('.material-icons').textContent = 'brightness_4';
+    }
 
-    // Clear Button
-    clearBtn.addEventListener('click', clearText);
 
-    // --- Functions ---
+    // --- Clear Button Functionality ---
+    clearButton.addEventListener('click', () => {
+        noteArea.value = '';
+        localStorage.removeItem('scratchpadNote'); // Also clear from local storage
+        updateWordCount(); // Reset word count
+    });
 
-    // Word Count
+    // --- Copy Button Functionality ---
+    copyButton.addEventListener('click', () => {
+        noteArea.select(); // Select the text in the text area
+        noteArea.setSelectionRange(0, 99999); // For mobile devices
+
+        // Use the modern Clipboard API if available
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(noteArea.value)
+                .then(() => {
+                    console.log('Text copied to clipboard');
+                    // Optional: Provide user feedback (e.g., a small message)
+                    // alert('Note copied to clipboard!'); // Avoid alert, use a better UI element
+                })
+                .catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    // Fallback for older browsers (less reliable)
+                    try {
+                        document.execCommand('copy');
+                        console.log('Text copied using execCommand');
+                        // alert('Note copied to clipboard!'); // Avoid alert
+                    } catch (fallbackErr) {
+                        console.error('Fallback copy failed: ', fallbackErr);
+                        // alert('Could not copy text.'); // Avoid alert
+                    }
+                });
+        } else {
+            // Fallback for browsers that don't support the Clipboard API
+            try {
+                document.execCommand('copy');
+                console.log('Text copied using execCommand (fallback)');
+                // alert('Note copied to clipboard!'); // Avoid alert
+            } catch (fallbackErr) {
+                console.error('Fallback copy failed: ', fallbackErr);
+                // alert('Could not copy text.'); // Avoid alert
+            }
+        }
+    });
+
+    // --- Word Count Functionality ---
     function updateWordCount() {
         const text = noteArea.value.trim();
-        const words = text === '' ? 0 : text.split(/\s+/).length;
-        wordCountDisplay.textContent = `Words: ${words}`;
-    }
-
-    // Theme Management
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
-        updateThemeIcon(isDarkMode);
-        updateMetaThemeColor(isDarkMode);
-    }
-
-    function applyInitialTheme() {
-        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-        let isDarkMode = false;
-
-        if (savedTheme) {
-            isDarkMode = savedTheme === 'dark';
+        if (text === '') {
+            wordCountDisplay.textContent = '0 words';
         } else {
-            // Fallback to system preference if no theme is saved
-            isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
-
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-        }
-        updateThemeIcon(isDarkMode);
-        updateMetaThemeColor(isDarkMode);
-    }
-
-    function updateThemeIcon(isDarkMode) {
-        if (themeIcon) {
-            themeIcon.textContent = isDarkMode ? 'dark_mode' : 'light_mode';
-            themeToggleBtn.setAttribute('aria-label', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
-            themeToggleBtn.setAttribute('title', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
+            // Split by whitespace characters (space, tab, newline, etc.)
+            const words = text.split(/\s+/).filter(word => word.length > 0);
+            wordCountDisplay.textContent = `${words.length} words`;
         }
     }
 
-    function updateMetaThemeColor(isDarkMode) {
-        // Update the meta theme-color tag for browser UI consistency
-        let lightThemeMeta = document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: light)"]');
-        let darkThemeMeta = document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: dark)"]');
-        
-        // If these specific media query metas don't exist, try to find a general one or create it.
-        // For simplicity with the provided HTML, we'll assume they exist.
-        // A more robust solution might involve a single theme-color meta tag and updating its content.
-        // However, the current HTML setup with media queries is also a valid approach.
-        // The PWA manifest theme_color will be used on app launch.
-        // This JS update is for when the theme is changed *while the app is open*.
-        
-        // To ensure the browser picks up the change immediately, we can have a primary meta tag
-        // and update its content. Let's try that.
-        let primaryThemeColorMeta = document.querySelector('meta[name="theme-color"]:not([media])');
-        if (!primaryThemeColorMeta) {
-            primaryThemeColorMeta = document.createElement('meta');
-            primaryThemeColorMeta.name = "theme-color";
-            document.head.appendChild(primaryThemeColorMeta);
-        }
-        primaryThemeColorMeta.content = isDarkMode ? '#141218' : '#FFFBFE'; // Match CSS dark/light bg
-    }
+    // Initial word count update on load (already handled if savedNote exists, but good to be explicit)
+    // updateWordCount(); // Called after loading saved note
 
-
-    // Copy Text
-    async function copyText() {
-        if (!noteArea.value) {
-            showToast('Nothing to copy!');
-            return;
-        }
-        try {
-            await navigator.clipboard.writeText(noteArea.value);
-            showToast('Copied to clipboard!');
-        } catch (err) {
-            console.error('Failed to copy text: ', err);
-            showToast('Failed to copy.');
-        }
-    }
-
-    // Clear Text
-    function clearText() {
-        noteArea.value = '';
-        localStorage.removeItem(NOTE_STORAGE_KEY); // Also clear from storage
-        updateWordCount();
-        showToast('Notes cleared!');
-    }
-
-    // Toast Notification
-    let toastTimeout;
-    function showToast(message) {
-        if (toastNotification) {
-            toastNotification.textContent = message;
-            toastNotification.classList.add('show');
-            clearTimeout(toastTimeout); // Clear existing timeout if any
-            toastTimeout = setTimeout(() => {
-                toastNotification.classList.remove('show');
-            }, 3000); // Hide after 3 seconds
-        }
-    }
-
-    // Load saved notes
-    function loadSavedNotes() {
-        const savedNotes = localStorage.getItem(NOTE_STORAGE_KEY);
-        if (savedNotes) {
-            noteArea.value = savedNotes;
-        }
-    }
-
-    // --- Initialization ---
-    loadSavedNotes();
-    applyInitialTheme();
-    updateWordCount(); // Initial word count
-
-    // --- PWA Service Worker Registration ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(registration => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                })
-                .catch(error => {
-                    console.log('ServiceWorker registration failed: ', error);
-                });
-        });
-    }
 });
