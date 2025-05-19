@@ -26,8 +26,8 @@ body.dark-mode {
     flex-direction: column;
     padding: 24px; /* Increased padding around the content */
     box-sizing: border-box; /* Include padding in element's total width and height */
-    /* Reduced padding-bottom to give less space below controls */
-    padding-bottom: 70px; /* Adjusted space for controls + padding */
+    /* Reduced padding-bottom further to give less space below controls */
+    padding-bottom: 40px; /* Adjusted space for controls + padding */
 }
 
 /* Text Area Styling */
@@ -39,7 +39,7 @@ body.dark-mode {
     border-radius: 16px; /* Rounded corners, Material 3 Medium shape */
     font-family: 'Roboto Mono', monospace; /* Changed font to Roboto Mono */
     font-weight: 500; /* Set font weight to Medium */
-    font-size: 2.2rem; /* Further increased font size */
+    font-size: 1.8rem; /* Reduced font size */
     resize: none; /* Prevent manual resizing */
     outline: none; /* Remove default outline on focus */
     box-sizing: border-box; /* Include padding and border in element's total width and height */
@@ -189,13 +189,13 @@ body.dark-mode #copy-button:active {
 @media (max-width: 600px) {
     .container {
         padding: 16px; /* Adjusted padding on smaller screens */
-        padding-bottom: 50px; /* Reduced padding-bottom for controls on smaller screens */
+        padding-bottom: 30px; /* Reduced padding-bottom for controls on smaller screens */
     }
 
     #note-area {
         padding: 16px; /* Adjusted textarea padding */
         border-radius: 14px; /* Adjusted border radius */
-        font-size: 1.8rem; /* Adjusted font size for smaller screens */
+        font-size: 1.5rem; /* Further reduced font size for smaller screens */
     }
 
     .controls-container {
