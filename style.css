@@ -10,20 +10,20 @@ body {
 
 /* Light Mode Colors (Material 3 inspired faint background) */
 body.light-mode {
-    background-color: #f3edf7; /* A very faint purple */
-    color: #1c1b1f; /* Dark text */
+    background-color: #f3edf7; /* Surface - Faint purple */
+    color: #1c1b1f; /* On Surface - Dark text */
 }
 
 /* Dark Mode Colors (Completely black background as requested) */
 body.dark-mode {
-    background-color: #000000; /* Completely black */
-    color: #e6e1e5; /* Light text */
+    background-color: #000000; /* Surface - Completely black */
+    color: #e6e1e5; /* On Surface - Light text */
 }
 
 /* Title Bar Styling */
 .title-bar {
-    background-color: #4f378b; /* Deep purple, Material 3 Secondary color dark */
-    color: #eaddff; /* Material 3 On Secondary container dark (legible on deep purple) */
+    background-color: #006a6a; /* Tertiary - Teal */
+    color: #b2fbfd; /* On Tertiary - Light Teal (legible) */
     padding: 12px 24px; /* Vertical and horizontal padding */
     display: flex;
     justify-content: space-between; /* Space out title and toggle button */
@@ -31,6 +31,13 @@ body.dark-mode {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle shadow below title bar */
     flex-shrink: 0; /* Prevent title bar from shrinking */
 }
+
+/* Dark mode title bar colors */
+body.dark-mode .title-bar {
+    background-color: #4cd9d9; /* Tertiary Dark */
+    color: #003738; /* On Tertiary Dark */
+}
+
 
 .app-title {
     font-family: 'Press Start 2P', cursive; /* Changed font to Press Start 2P */
@@ -63,9 +70,13 @@ body.dark-mode {
     background-color: rgba(234, 221, 255, 0.2); /* Subtle active effect */
 }
 
-/* Dark mode theme toggle button colors (already inherited, but can override if needed) */
-body.dark-mode .theme-toggle-button {
-     color: inherit;
+/* Dark mode theme toggle button hover/active */
+body.dark-mode .theme-toggle-button:hover {
+     background-color: rgba(0, 55, 56, 0.1); /* Subtle hover effect using On Tertiary Dark */
+}
+
+body.dark-mode .theme-toggle-button:active {
+    background-color: rgba(0, 55, 56, 0.2); /* Subtle active effect using On Tertiary Dark */
 }
 
 
@@ -77,8 +88,6 @@ body.dark-mode .theme-toggle-button {
     box-sizing: border-box; /* Include padding in element's total width and height */
     /* Reduced padding-bottom further to give less space below controls */
     padding-bottom: 40px; /* Adjusted space for controls + padding */
-    /* Add padding-top to account for the fixed title bar if needed,
-       but with flex column layout, it should flow below automatically */
 }
 
 /* Text Area Styling */
@@ -86,17 +95,23 @@ body.dark-mode .theme-toggle-button {
     flex-grow: 1; /* Allow textarea to grow and fill space */
     width: 100%; /* Take full width */
     padding: 20px; /* Increased padding */
-    border: 2px solid #6750a4; /* Bold outline, Material 3 Primary color */
+    border: 2px solid #0060a8; /* Primary - Blue outline */
     border-radius: 16px; /* Rounded corners, Material 3 Medium shape */
-    font-family: 'Roboto Mono', monospace; /* Changed font to Roboto Mono */
-    font-weight: 500; /* Set font weight to Medium */
+    font-family: 'VT323', monospace; /* Changed font to VT323 */
+    font-weight: 400; /* VT323 typically only has one weight */
     font-size: 1.6rem; /* Reduced font size further */
     resize: none; /* Prevent manual resizing */
     outline: none; /* Remove default outline on focus */
     box-sizing: border-box; /* Include padding and border in element's total width and height */
     margin-bottom: 16px; /* Space between textarea and controls */
     background-color: transparent; /* Make background transparent to show body background */
-    color: inherit; /* Inherit text color from body */
+    color: inherit; /* Inherit text color from body in light mode */
+}
+
+/* Dark mode text area colors */
+body.dark-mode #note-area {
+    border-color: #a8c7fa; /* Primary Dark - Light Blue outline */
+    color: #00ff00; /* Matrix Green text color */
 }
 
 /* Placeholder text color */
@@ -105,7 +120,7 @@ body.light-mode #note-area::placeholder {
 }
 
 body.dark-mode #note-area::placeholder {
-    color: rgba(230, 225, 229, 0.6); /* Light text with opacity */
+    color: rgba(0, 255, 0, 0.6); /* Matrix Green with opacity */
 }
 
 
@@ -153,8 +168,8 @@ body.dark-mode #note-area::placeholder {
 
 /* Specific Button Colors (More Colourful) */
 #clear-button {
-    background-color: #ba1a1a; /* Material 3 Error color */
-    color: #ffffff; /* White text for contrast */
+    background-color: #ba1a1a; /* Error - Red */
+    color: #ffffff; /* On Error - White text for contrast */
 }
 
 #clear-button:hover {
@@ -166,23 +181,23 @@ body.dark-mode #note-area::placeholder {
 }
 
 #copy-button {
-    background-color: #6750a4; /* Material 3 Primary color */
-    color: #ffffff; /* White text for contrast */
+    background-color: #0060a8; /* Primary - Blue */
+    color: #ffffff; /* On Primary - White text for contrast */
 }
 
 #copy-button:hover {
-    background-color: #4f378b; /* Darker primary on hover */
+    background-color: #004a8b; /* Darker primary on hover */
 }
 
 #copy-button:active {
-    background-color: #3b2975; /* Even darker primary on active */
+    background-color: #00396c; /* Even darker primary on active */
 }
 
 
 /* Dark mode specific button colors */
 body.dark-mode #clear-button {
-    background-color: #ffb4ab; /* Material 3 Error color dark */
-    color: #690005; /* Material 3 On Error color dark */
+    background-color: #ffb4ab; /* Error Dark */
+    color: #690005; /* On Error Dark */
 }
 
 body.dark-mode #clear-button:hover {
@@ -195,16 +210,16 @@ body.dark-mode #clear-button:active {
 
 
 body.dark-mode #copy-button {
-    background-color: #d0bcff; /* Material 3 Primary color dark */
-    color: #381e72; /* Material 3 On Primary color dark */
+    background-color: #a8c7fa; /* Primary Dark */
+    color: #0a2342; /* On Primary Dark */
 }
 
-body.dark-mode #copy-mode #copy-button:hover {
-    background-color: #b69df8; /* Lighter primary dark on hover */
+body.dark-mode #copy-button:hover {
+    background-color: #89b6fa; /* Lighter primary dark on hover */
 }
 
 body.dark-mode #copy-button:active {
-    background-color: #9a82db; /* Even lighter primary dark on active */
+    background-color: #649ff8; /* Even lighter primary dark on active */
 }
 
 
