@@ -27,8 +27,7 @@
             height: 100vh; /* Ensure body takes full viewport height */
             display: flex; /* Use flexbox for body */
             flex-direction: column; /* Arrange children in a column */
-            overflow: hidden; /* Prevent body scroll, main will handle scrolling */
-            /* padding-bottom will be set dynamically by JS to account for controls and keyboard */
+            overflow: hidden; /* Prevent body scroll */
         }
 
         /* Light mode styles (Greenish-Blue Material 3 inspired) */
@@ -42,6 +41,16 @@
             background-color: #00201C; /* Surface Dark (Dark Greenish-Blue) */
             color: #A7EDE0; /* On Surface Dark (Light Greenish-Blue) */
         }
+
+        /* Container for the main content and controls */
+        .app-content-container {
+            flex-grow: 1; /* Allow this container to take up space */
+            display: flex; /* Use flexbox to arrange main and controls */
+            flex-direction: column; /* Stack main and controls vertically */
+            overflow: hidden; /* Hide overflowing content */
+            /* Height will be set dynamically by JS */
+        }
+
 
         /* Custom styles for the textarea */
         #note-textarea {
@@ -60,12 +69,11 @@
 
         /* Main content area - uses flexbox to manage layout */
         main {
-             flex-grow: 1; /* Allow main to take up available space */
+             flex-grow: 1; /* Allow main to take up available space within app-content-container */
              overflow-y: auto; /* Enable scrolling within the main content */
              padding: 1rem; /* Add some padding around the main content */
              display: flex; /* Use flexbox to contain the textarea-container */
              flex-direction: column; /* Arrange children in a column */
-             /* No padding-bottom needed here, body padding handles spacing */
         }
 
         /* Container for the textarea with border and rounded corners */
@@ -88,9 +96,7 @@
             transition: background-color 0.3s ease;
             flex-shrink: 0; /* Prevent controls from shrinking */
             width: 100%; /* Ensure controls take full width */
-            position: fixed; /* Use fixed positioning */
-            bottom: 0; /* Default position at the bottom */
-            left: 0;
+            /* No fixed or absolute positioning here, flexbox handles it */
         }
 
         /* Light mode control bar background (Semi-transparent M3 Surface) */
@@ -142,28 +148,30 @@
     </style>
 </head>
 <body class="light-mode">
-    <main class="container mx-auto">
-        <div class="textarea-container">
-            <textarea
-                id="note-textarea"
-                class="w-full h-full"
-                placeholder="Start writing here..."
-            ></textarea>
-        </div>
-    </main>
+    <div class="app-content-container">
+        <main class="container mx-auto">
+            <div class="textarea-container">
+                <textarea
+                    id="note-textarea"
+                    class="w-full h-full"
+                    placeholder="Start writing here..."
+                ></textarea>
+            </div>
+        </main>
 
-    <div class="bottom-controls">
-        <div id="word-count" class="ml-4">0 words</div>
-        <div class="flex space-x-4 mr-4">
-            <button id="mode-toggle" class="control-button">
-                <span class="material-icons">brightness_4</span>
-            </button>
-            <button id="clear-button" class="control-button">
-                <span class="material-icons">delete</span>
-            </button>
-            <button id="copy-button" class="control-button">
-                <span class="material-icons">content_copy</span>
-            </button>
+        <div class="bottom-controls">
+            <div id="word-count" class="ml-4">0 words</div>
+            <div class="flex space-x-4 mr-4">
+                <button id="mode-toggle" class="control-button">
+                    <span class="material-icons">brightness_4</span>
+                </button>
+                <button id="clear-button" class="control-button">
+                    <span class="material-icons">delete</span>
+                </button>
+                <button id="copy-button" class="control-button">
+                    <span class="material-icons">content_copy</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -174,9 +182,8 @@
         const modeToggleButton = document.getElementById('mode-toggle');
         const wordCountSpan = document.getElementById('word-count');
         const body = document.body;
-        const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-        const mainElement = document.querySelector('main'); // Get the main element
-        const bottomControls = document.querySelector('.bottom-controls'); // Get the controls element
+        const themeColorMeta = document.querySelector('meta[name="theme-color']");
+        const appContentContainer = document.querySelector('.app-content-container'); // Get the new container
 
 
         // --- Local Storage for Mode ---
@@ -195,23 +202,11 @@
 
         // --- Dynamic Adjustment for Keyboard and Controls ---
         function adjustLayoutForKeyboard() {
-            if (bottomControls && window.visualViewport) {
+            if (appContentContainer && window.visualViewport) {
                 const visualViewportHeight = window.visualViewport.height; // Visual viewport height
-                const layoutViewportHeight = window.innerHeight; // Layout viewport height
-                const controlsHeight = bottomControls.offsetHeight; // Height of the controls
-
-                // Calculate the space taken by the keyboard
-                const keyboardHeight = layoutViewportHeight - visualViewportHeight;
-
-                // Adjust the padding-bottom of the body to make space for controls and keyboard
-                // This pushes the content up, preventing overlap
-                body.style.paddingBottom = `${controlsHeight + keyboardHeight}px`;
-
-                // Ensure the controls stay at the bottom of the visual viewport
-                bottomControls.style.bottom = `${keyboardHeight}px`;
-
-                 // The main element's height will be automatically adjusted by flexbox
-                 // to fill the remaining space above the body padding.
+                // Set the height of the app content container to the visual viewport height
+                // This makes the container shrink when the keyboard is open
+                appContentContainer.style.height = `${visualViewportHeight}px`;
             }
         }
 
