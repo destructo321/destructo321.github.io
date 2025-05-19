@@ -24,7 +24,7 @@ body.dark-mode {
     flex-grow: 1; /* Allow container to take up available space */
     display: flex;
     flex-direction: column;
-    padding: 16px; /* Add some padding around the content */
+    padding: 24px; /* Increased padding around the content */
     box-sizing: border-box; /* Include padding in element's total width and height */
 }
 
@@ -32,12 +32,12 @@ body.dark-mode {
 #note-area {
     flex-grow: 1; /* Allow textarea to grow and fill space */
     width: 100%; /* Take full width */
-    padding: 16px;
+    padding: 20px; /* Increased padding */
     border: 2px solid #6750a4; /* Bold outline, Material 3 Primary color */
     border-radius: 16px; /* Rounded corners, Material 3 Medium shape */
     font-family: 'Roboto Flex', sans-serif;
     font-variation-settings: 'wght' 800; /* Extrabold weight */
-    font-size: 2rem; /* Increased font size */
+    font-size: 2.2rem; /* Further increased font size */
     resize: none; /* Prevent manual resizing */
     outline: none; /* Remove default outline on focus */
     box-sizing: border-box; /* Include padding and border in element's total width and height */
@@ -62,7 +62,7 @@ body.dark-mode #note-area::placeholder {
     justify-content: space-between; /* Space out word count and buttons */
     align-items: flex-end; /* Align items to the bottom */
     width: 100%;
-    padding: 0 16px 16px 16px; /* Padding at the bottom */
+    padding: 0 24px 24px 24px; /* Increased padding at the bottom */
     box-sizing: border-box;
     /* Position fixed to stay at the bottom, adjusting for keyboard */
     position: fixed;
@@ -72,6 +72,7 @@ body.dark-mode #note-area::placeholder {
     background-color: inherit; /* Inherit background to blend with body */
     /* Add a subtle shadow or border to separate from textarea content if needed */
     /* box-shadow: 0 -2px 5px rgba(0,0,0,0.1); */
+    z-index: 10; /* Ensure controls are above other content */
 }
 
 .buttons-container {
@@ -83,18 +84,16 @@ body.dark-mode #note-area::placeholder {
 .word-count {
     font-family: 'Roboto Flex', sans-serif;
     font-variation-settings: 'wght' 100; /* Extra Light weight */
-    font-size: 1.2rem; /* Increased font size */
+    font-size: 1rem; /* Increased font size */
     color: inherit; /* Inherit text color from body */
 }
 
 /* Control Buttons Styling (Colourful Material 3 inspired) */
 .control-button {
-    background-color: #eaddff; /* Material 3 Secondary container */
-    color: #21005d; /* Material 3 On Secondary container */
     border: none;
     border-radius: 24px; /* Slightly increased border radius */
     padding: 14px 20px; /* Increased padding for larger controls */
-    font-size: 1.5rem; /* Increased font size */
+    font-size: 1.1rem; /* Increased font size */
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -103,32 +102,87 @@ body.dark-mode #note-area::placeholder {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle shadow */
 }
 
-.control-button:hover {
-    background-color: #e8def8; /* Slightly darker secondary container on hover */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+/* Specific Button Colors (More Colourful) */
+#theme-toggle {
+    background-color: #006a6a; /* Material 3 Tertiary color */
+    color: #b2fbfd; /* Material 3 On Tertiary color */
 }
 
-.control-button:active {
-    background-color: #d0bcff; /* Material 3 Secondary color on active */
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+#theme-toggle:hover {
+    background-color: #004d4d; /* Darker tertiary on hover */
 }
 
-/* Dark mode button colors */
-body.dark-mode .control-button {
-    background-color: #4f378b; /* Material 3 Secondary container dark */
-    color: #eaddff; /* Material 3 On Secondary container dark */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+#theme-toggle:active {
+    background-color: #003535; /* Even darker tertiary on active */
 }
 
-body.dark-mode .control-button:hover {
-    background-color: #6750a4; /* Material 3 Secondary dark on hover */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+#clear-button {
+    background-color: #ba1a1a; /* Material 3 Error color */
+    color: #ffffff; /* White text for contrast */
 }
 
-body.dark-mode .control-button:active {
-    background-color: #b69df8; /* Material 3 Secondary dark on active */
-    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+#clear-button:hover {
+    background-color: #93000a; /* Darker error on hover */
 }
+
+#clear-button:active {
+    background-color: #690005; /* Even darker error on active */
+}
+
+#copy-button {
+    background-color: #6750a4; /* Material 3 Primary color */
+    color: #ffffff; /* White text for contrast */
+}
+
+#copy-button:hover {
+    background-color: #4f378b; /* Darker primary on hover */
+}
+
+#copy-button:active {
+    background-color: #3b2975; /* Even darker primary on active */
+}
+
+
+/* Dark mode specific button colors */
+body.dark-mode #theme-toggle {
+    background-color: #4cd9d9; /* Material 3 Tertiary color dark */
+    color: #003738; /* Material 3 On Tertiary color dark */
+}
+body.dark-mode #theme-toggle:hover {
+     background-color: #66e3e3; /* Lighter tertiary dark on hover */
+}
+body.dark-mode #theme-toggle:active {
+    background-color: #81f0ef; /* Even lighter tertiary dark on active */
+}
+
+
+body.dark-mode #clear-button {
+    background-color: #ffb4ab; /* Material 3 Error color dark */
+    color: #690005; /* Material 3 On Error color dark */
+}
+
+body.dark-mode #clear-button:hover {
+    background-color: #ff897d; /* Lighter error dark on hover */
+}
+
+body.dark-mode #clear-button:active {
+    background-color: #ff5449; /* Even lighter error dark on active */
+}
+
+
+body.dark-mode #copy-button {
+    background-color: #d0bcff; /* Material 3 Primary color dark */
+    color: #381e72; /* Material 3 On Primary color dark */
+}
+
+body.dark-mode #copy-button:hover {
+    background-color: #b69df8; /* Lighter primary dark on hover */
+}
+
+body.dark-mode #copy-button:active {
+    background-color: #9a82db; /* Even lighter primary dark on active */
+}
+
 
 /* Style for the icons within the buttons */
 .control-button .material-icons {
@@ -138,17 +192,17 @@ body.dark-mode .control-button:active {
 /* Responsive adjustments */
 @media (max-width: 600px) {
     .container {
-        padding: 12px; /* Adjusted padding on smaller screens */
+        padding: 16px; /* Adjusted padding on smaller screens */
     }
 
     #note-area {
-        padding: 14px; /* Adjusted textarea padding */
+        padding: 16px; /* Adjusted textarea padding */
         border-radius: 14px; /* Adjusted border radius */
-        font-size: 1.5rem; /* Adjusted font size for smaller screens */
+        font-size: 1.8rem; /* Adjusted font size for smaller screens */
     }
 
     .controls-container {
-        padding: 0 12px 12px 12px; /* Adjusted padding */
+        padding: 0 16px 16px 16px; /* Adjusted padding */
     }
 
     .buttons-container {
@@ -158,7 +212,7 @@ body.dark-mode .control-button:active {
     .control-button {
         padding: 12px 16px; /* Adjusted button padding */
         border-radius: 20px; /* Adjusted border radius */
-        font-size: 1.3rem; /* Adjusted font size for smaller screens */
+        font-size: 1rem; /* Adjusted font size for smaller screens */
     }
 
     .control-button .material-icons {
@@ -166,6 +220,6 @@ body.dark-mode .control-button:active {
     }
 
     .word-count {
-        font-size: 1rem; /* Adjusted font size */
+        font-size: 0.9rem; /* Adjusted font size */
     }
 }
