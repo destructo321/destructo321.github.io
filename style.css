@@ -26,6 +26,10 @@ body.dark-mode {
     flex-direction: column;
     padding: 24px; /* Increased padding around the content */
     box-sizing: border-box; /* Include padding in element's total width and height */
+    /* Add padding-bottom equal to the height of the controls-container + margin */
+    /* This creates space at the bottom so content doesn't hide behind controls */
+    /* We'll estimate the height of controls-container, adjust if needed */
+    padding-bottom: 100px; /* Estimated space for controls + padding */
 }
 
 /* Text Area Styling */
@@ -60,19 +64,14 @@ body.dark-mode #note-area::placeholder {
 .controls-container {
     display: flex;
     justify-content: space-between; /* Space out word count and buttons */
-    align-items: flex-end; /* Align items to the bottom */
+    align-items: center; /* Align items vertically in the center */
     width: 100%;
-    padding: 0 24px 24px 24px; /* Increased padding at the bottom */
+    /* Removed position: fixed and related properties */
+    /* This container is now in the normal document flow below the textarea */
+    margin-top: auto; /* Push container to the bottom of the flex container */
+    padding: 16px 0; /* Add some vertical padding */
     box-sizing: border-box;
-    /* Position fixed to stay at the bottom, adjusting for keyboard */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: inherit; /* Inherit background to blend with body */
-    /* Add a subtle shadow or border to separate from textarea content if needed */
-    /* box-shadow: 0 -2px 5px rgba(0,0,0,0.1); */
-    z-index: 10; /* Ensure controls are above other content */
+    z-index: 10; /* Ensure controls are above other content if needed */
 }
 
 .buttons-container {
@@ -175,7 +174,7 @@ body.dark-mode #copy-button {
     color: #381e72; /* Material 3 On Primary color dark */
 }
 
-body.dark-mode #copy-button:hover {
+body.dark-mode #copy-mode #copy-button:hover {
     background-color: #b69df8; /* Lighter primary dark on hover */
 }
 
@@ -193,6 +192,7 @@ body.dark-mode #copy-button:active {
 @media (max-width: 600px) {
     .container {
         padding: 16px; /* Adjusted padding on smaller screens */
+        padding-bottom: 80px; /* Adjusted padding-bottom for controls */
     }
 
     #note-area {
@@ -202,7 +202,7 @@ body.dark-mode #copy-button:active {
     }
 
     .controls-container {
-        padding: 0 16px 16px 16px; /* Adjusted padding */
+        padding: 12px 0; /* Adjusted vertical padding */
     }
 
     .buttons-container {
