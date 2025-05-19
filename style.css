@@ -26,10 +26,8 @@ body.dark-mode {
     flex-direction: column;
     padding: 24px; /* Increased padding around the content */
     box-sizing: border-box; /* Include padding in element's total width and height */
-    /* Add padding-bottom equal to the height of the controls-container + margin */
-    /* This creates space at the bottom so content doesn't hide behind controls */
-    /* We'll estimate the height of controls-container, adjust if needed */
-    padding-bottom: 100px; /* Estimated space for controls + padding */
+    /* Reduced padding-bottom to give less space below controls */
+    padding-bottom: 70px; /* Adjusted space for controls + padding */
 }
 
 /* Text Area Styling */
@@ -39,8 +37,8 @@ body.dark-mode {
     padding: 20px; /* Increased padding */
     border: 2px solid #6750a4; /* Bold outline, Material 3 Primary color */
     border-radius: 16px; /* Rounded corners, Material 3 Medium shape */
-    font-family: 'Roboto Flex', sans-serif;
-    font-variation-settings: 'wght' 800; /* Extrabold weight */
+    font-family: 'Roboto Mono', monospace; /* Changed font to Roboto Mono */
+    font-weight: 500; /* Set font weight to Medium */
     font-size: 2.2rem; /* Further increased font size */
     resize: none; /* Prevent manual resizing */
     outline: none; /* Remove default outline on focus */
@@ -66,7 +64,6 @@ body.dark-mode #note-area::placeholder {
     justify-content: space-between; /* Space out word count and buttons */
     align-items: center; /* Align items vertically in the center */
     width: 100%;
-    /* Removed position: fixed and related properties */
     /* This container is now in the normal document flow below the textarea */
     margin-top: auto; /* Push container to the bottom of the flex container */
     padding: 16px 0; /* Add some vertical padding */
@@ -81,7 +78,7 @@ body.dark-mode #note-area::placeholder {
 
 /* Word Count Styling */
 .word-count {
-    font-family: 'Roboto Flex', sans-serif;
+    font-family: 'Roboto Flex', sans-serif; /* Keep Roboto Flex for word count */
     font-variation-settings: 'wght' 100; /* Extra Light weight */
     font-size: 1rem; /* Increased font size */
     color: inherit; /* Inherit text color from body */
@@ -192,7 +189,7 @@ body.dark-mode #copy-button:active {
 @media (max-width: 600px) {
     .container {
         padding: 16px; /* Adjusted padding on smaller screens */
-        padding-bottom: 80px; /* Adjusted padding-bottom for controls */
+        padding-bottom: 50px; /* Reduced padding-bottom for controls on smaller screens */
     }
 
     #note-area {
