@@ -20,14 +20,65 @@ body.dark-mode {
     color: #e6e1e5; /* Light text */
 }
 
+/* Title Bar Styling */
+.title-bar {
+    background-color: #4f378b; /* Deep purple, Material 3 Secondary color dark */
+    color: #eaddff; /* Material 3 On Secondary container dark (legible on deep purple) */
+    padding: 12px 24px; /* Vertical and horizontal padding */
+    display: flex;
+    justify-content: space-between; /* Space out title and toggle button */
+    align-items: center; /* Vertically align items */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle shadow below title bar */
+    flex-shrink: 0; /* Prevent title bar from shrinking */
+}
+
+.app-title {
+    font-family: 'Oi', cursive; /* Use the Oi font */
+    font-size: 2rem; /* Adjust title font size */
+    margin: 0; /* Remove default margin */
+    color: inherit; /* Inherit color from title-bar */
+}
+
+/* Adjust Theme Toggle Button Style within Title Bar */
+.theme-toggle-button {
+    background-color: transparent; /* Make background transparent */
+    color: inherit; /* Inherit color from title-bar */
+    border: none; /* Remove border */
+    border-radius: 50%; /* Make it round */
+    padding: 8px; /* Adjust padding */
+    font-size: 1.5rem; /* Adjust icon size */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+    box-shadow: none; /* Remove shadow */
+}
+
+.theme-toggle-button:hover {
+     background-color: rgba(234, 221, 255, 0.1); /* Subtle hover effect */
+}
+
+.theme-toggle-button:active {
+    background-color: rgba(234, 221, 255, 0.2); /* Subtle active effect */
+}
+
+/* Dark mode theme toggle button colors (already inherited, but can override if needed) */
+body.dark-mode .theme-toggle-button {
+     color: inherit;
+}
+
+
 .container {
     flex-grow: 1; /* Allow container to take up available space */
     display: flex;
     flex-direction: column;
-    padding: 24px; /* Increased padding around the content */
+    padding: 24px; /* Padding around the content */
     box-sizing: border-box; /* Include padding in element's total width and height */
     /* Reduced padding-bottom further to give less space below controls */
     padding-bottom: 40px; /* Adjusted space for controls + padding */
+    /* Add padding-top to account for the fixed title bar if needed,
+       but with flex column layout, it should flow below automatically */
 }
 
 /* Text Area Styling */
@@ -85,7 +136,8 @@ body.dark-mode #note-area::placeholder {
 }
 
 /* Control Buttons Styling (Colourful Material 3 inspired) */
-.control-button {
+/* Base styles for clear and copy buttons */
+.control-button:not(.theme-toggle-button) {
     border: none;
     border-radius: 24px; /* Slightly increased border radius */
     padding: 14px 20px; /* Increased padding for larger controls */
@@ -98,20 +150,8 @@ body.dark-mode #note-area::placeholder {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle shadow */
 }
 
+
 /* Specific Button Colors (More Colourful) */
-#theme-toggle {
-    background-color: #006a6a; /* Material 3 Tertiary color */
-    color: #b2fbfd; /* Material 3 On Tertiary color */
-}
-
-#theme-toggle:hover {
-    background-color: #004d4d; /* Darker tertiary on hover */
-}
-
-#theme-toggle:active {
-    background-color: #003535; /* Even darker tertiary on active */
-}
-
 #clear-button {
     background-color: #ba1a1a; /* Material 3 Error color */
     color: #ffffff; /* White text for contrast */
@@ -140,18 +180,6 @@ body.dark-mode #note-area::placeholder {
 
 
 /* Dark mode specific button colors */
-body.dark-mode #theme-toggle {
-    background-color: #4cd9d9; /* Material 3 Tertiary color dark */
-    color: #003738; /* Material 3 On Tertiary color dark */
-}
-body.dark-mode #theme-toggle:hover {
-     background-color: #66e3e3; /* Lighter tertiary dark on hover */
-}
-body.dark-mode #theme-toggle:active {
-    background-color: #81f0ef; /* Even lighter tertiary dark on active */
-}
-
-
 body.dark-mode #clear-button {
     background-color: #ffb4ab; /* Material 3 Error color dark */
     color: #690005; /* Material 3 On Error color dark */
@@ -187,6 +215,19 @@ body.dark-mode #copy-button:active {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
+    .title-bar {
+        padding: 10px 16px; /* Adjusted padding for smaller screens */
+    }
+
+    .app-title {
+        font-size: 1.8rem; /* Adjusted title font size for smaller screens */
+    }
+
+    .theme-toggle-button {
+        padding: 6px; /* Adjusted padding */
+        font-size: 1.3rem; /* Adjusted icon size */
+    }
+
     .container {
         padding: 16px; /* Adjusted padding on smaller screens */
         padding-bottom: 30px; /* Reduced padding-bottom for controls on smaller screens */
@@ -206,7 +247,7 @@ body.dark-mode #copy-button:active {
         gap: 10px; /* Adjusted space between buttons */
     }
 
-    .control-button {
+    .control-button:not(.theme-toggle-button) {
         padding: 12px 16px; /* Adjusted button padding */
         border-radius: 20px; /* Adjusted border radius */
         font-size: 1rem; /* Adjusted font size for smaller screens */
