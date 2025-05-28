@@ -8,14 +8,8 @@ const urlsToCache = [
     '/style.css',
     '/manifest.json',
     // Placeholder icons (replace with your actual icon paths if you download them)
-    'https://placehold.co/48x48/4F46E5/ffffff?text=K',
-    'https://placehold.co/72x72/4F46E5/ffffff?text=K',
-    'https://placehold.co/96x96/4F46E5/ffffff?text=K',
-    'https://placehold.co/144x144/4F46E5/ffffff?text=K',
-    'https://placehold.co/192x192/4F46E5/ffffff?text=K',
-    'https://placehold.co/256x256/4F46E5/ffffff?text=K',
-    'https://placehold.co/384x384/4F46E5/ffffff?text=K',
-    'https://placehold.co/512x512/4F46E5/ffffff?text=K'
+    '/icons/icon-512x512.png',
+    '/icons/icon-192x192.png'
 ];
 
 // Install event: caches essential assets
