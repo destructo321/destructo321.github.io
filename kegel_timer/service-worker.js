@@ -2,14 +2,14 @@
 
 const CACHE_NAME = 'kegel-timer-cache-v1';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/app.js',
-    '/style.css',
-    '/manifest.json',
+    '.',
+    'index.html',
+    'app.js',
+    'style.css',
+    'manifest.json',
     // Placeholder icons (replace with your actual icon paths if you download them)
-    '/icons/icon-512x512.png',
-    '/icons/icon-192x192.png'
+    'icons/icon-512x512.png',
+    'icons/icon-192x192.png'
 ];
 
 // Install event: caches essential assets
