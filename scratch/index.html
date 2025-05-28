@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <title>Keat's Scratchpad</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oi&family=Press+Start+2P&family=Roboto+Flex:opsz,wght@8..144,100;8..144,800&family=Roboto+Mono:wght@500&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <header class="title-bar">
+        <h1 class="app-title">Scratch</h1>
+        <button id="theme-toggle" class="control-button theme-toggle-button">
+            <span class="material-icons">brightness_4</span>
+        </button>
+    </header>
+
+    <div class="container">
+        <textarea id="note-area" placeholder="Jot down your thoughts here..."></textarea>
+
+        <div class="controls-container">
+            <div id="word-count" class="word-count">0 words</div>
+            <div class="buttons-container">
+                <button id="clear-button" class="control-button">
+                    <span class="material-icons">clear</span>
+                </button>
+                <button id="copy-button" class="control-button">
+                    <span class="material-icons">content_copy</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Register the service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker Registered', reg))
+                .catch(err => console.error('Service Worker Registration Failed', err));
+        }
+    </script>
+</body>
+</html>

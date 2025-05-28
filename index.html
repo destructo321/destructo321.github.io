@@ -2,46 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-    <title>Keat's Scratchpad</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Oi&family=Press+Start+2P&family=Roboto+Flex:opsz,wght@8..144,100;8..144,800&family=Roboto+Mono:wght@500&family=VT323&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
-</head>
-<body>
-
-    <header class="title-bar">
-        <h1 class="app-title">Scratch</h1>
-        <button id="theme-toggle" class="control-button theme-toggle-button">
-            <span class="material-icons">brightness_4</span>
-        </button>
-    </header>
-
-    <div class="container">
-        <textarea id="note-area" placeholder="Jot down your thoughts here..."></textarea>
-
-        <div class="controls-container">
-            <div id="word-count" class="word-count">0 words</div>
-            <div class="buttons-container">
-                <button id="clear-button" class="control-button">
-                    <span class="material-icons">clear</span>
-                </button>
-                <button id="copy-button" class="control-button">
-                    <span class="material-icons">content_copy</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-    <script>
-        // Register the service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker Registered', reg))
-                .catch(err => console.error('Service Worker Registration Failed', err));
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keat's Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a modern, clean look, typical of Material Design */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light grey background for a soft feel */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure the body takes full viewport height */
+            margin: 0;
+            padding: 1rem; /* Add some padding around the content */
+            box-sizing: border-box; /* Include padding in element's total width and height */
         }
-    </script>
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-xl max-w-md w-full text-center">
+        <h1 class="text-3xl sm:text-4xl font-bold text-indigo-700 mb-6 sm:mb-8">
+            Welcome!
+        </h1>
+        <p class="text-lg text-gray-600 mb-8 sm:mb-10">
+            Choose your destination, *cher*.
+        </p>
+
+        <nav class="flex flex-col space-y-6">
+            <a href="./scratchpad/index.html"
+               class="block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                <span class="text-xl">✍️ Scratchpad</span>
+            </a>
+
+            <a href="./kegel_timer/index.html"
+               class="block bg-teal-600 hover:bg-teal-700 text-white font-semibold py-4 px-6 rounded-xl transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                <span class="text-xl">⏰ Kegel Timer</span>
+            </a>
+        </nav>
+
+        <p class="text-sm text-gray-500 mt-10">
+            *C'est magnifique!*
+        </p>
+    </div>
 </body>
 </html>
