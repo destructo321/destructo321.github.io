@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#0046FF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NOTES">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzAwNDZGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMjAwIiBmaWxsPSIjRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LXdlaWdodD0iOTAwIj5OPC90ZXh0Pjwvc3ZnPg==">
     <title>NOTES</title>
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTk9URVMiLCJzaG9ydF9uYW1lIjoiTk9URVMiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzAwMDAwMCIsInRoZW1lX2NvbG9yIjoiIzAwMDAwMCIsImlkb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSTBPREE2SURRNE1DSWdhR1ZwWjJoMFBTSTBPREE2SURRNE1DSStQSEpsWTNRZ2QybGtkR2c5SWpRNE1DSWdhR1ZwWjJoMFBTSTBPREFpSUdacGJHdzlJaU13TURBd01EQWlMejQ4TDNOMlp6ND0iLCJzaXplcyI6IjQ4MHg0ODAiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
     <style>
         * {
             margin: 0;
@@ -503,8 +507,70 @@
 
         // Service Worker for PWA
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24oZXZlbnQpIHsKICBzZWxmLnNraXBXYWl0aW5nKCk7Cn0pOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGZ1bmN0aW9uKGV2ZW50KSB7CiAgZXZlbnQucmVzcG9uZFdpdGgoCiAgICBjYWNoZXMubWF0Y2goZXZlbnQucmVxdWVzdCkudGhlbihmdW5jdGlvbihyZXNwb25zZSkgewogICAgICByZXR1cm4gcmVzcG9uc2UgfHwgZmV0Y2goZXZlbnQucmVxdWVzdCk7CiAgICB9KQogICk7Cn0pOw==');
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'brutalist-notes-v1';
+                    
+                    self.addEventListener('install', (event) => {
+                        self.skipWaiting();
+                    });
+                    
+                    self.addEventListener('activate', (event) => {
+                        event.waitUntil(self.clients.claim());
+                    });
+                    
+                    self.addEventListener('fetch', (event) => {
+                        event.respondWith(
+                            caches.match(event.request).then((response) => {
+                                return response || fetch(event.request);
+                            })
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl).then((registration) => {
+                    console.log('Service Worker registered');
+                }).catch((error) => {
+                    console.log('Service Worker registration failed:', error);
+                });
+            });
         }
+
+        // Create manifest dynamically
+        const manifest = {
+            name: "NOTES - Brutalist Note Taking",
+            short_name: "NOTES",
+            description: "A brutalist note-taking PWA",
+            start_url: window.location.href,
+            display: "standalone",
+            background_color: "#0046FF",
+            theme_color: "#0046FF",
+            orientation: "any",
+            icons: [
+                {
+                    src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzAwNDZGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMjAwIiBmaWxsPSIjRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmb250LXdlaWdodD0iOTAwIj5OPC90ZXh0Pjwvc3ZnPg==",
+                    sizes: "512x512",
+                    type: "image/svg+xml",
+                    purpose: "any maskable"
+                },
+                {
+                    src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzAwNDZGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iODAiIGZpbGw9IiNGRkYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSI5MDAiPk48L3RleHQ+PC9zdmc+",
+                    sizes: "192x192",
+                    type: "image/svg+xml",
+                    purpose: "any maskable"
+                }
+            ]
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = manifestURL;
+        document.head.appendChild(manifestLink);
 
         init();
     </script>
