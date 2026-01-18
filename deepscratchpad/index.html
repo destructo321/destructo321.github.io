@@ -325,94 +325,60 @@
     </div>
 
     <script>
-        let notes = {};
-        let activeTabId = null;
-        let tabCounter = 1;
-        let fontSize = 16;
+        const APP_KEY = 'brutalistNotes_v2';
+        let state = {
+            notes: {},
+            activeTabId: null,
+            tabCounter: 1,
+            fontSize: 16
+        };
 
-        // Initialize
-        function init() {
-            console.log('Initializing app...');
-            loadFromMemory();
-            
-            if (Object.keys(notes).length === 0) {
-                console.log('No notes found, creating first tab');
-                createTab();
-            } else {
-                console.log('Found existing notes:', Object.keys(notes).length);
-                renderTabs();
-                if (activeTabId && notes[activeTabId]) {
-                    switchTab(activeTabId);
-                } else {
-                    switchTab(Object.keys(notes)[0]);
+        // Storage functions - simplified and more reliable
+        function save() {
+            try {
+                // Always save current textarea content before saving
+                const textarea = document.getElementById('textarea');
+                if (state.activeTabId && textarea) {
+                    state.notes[state.activeTabId].content = textarea.value;
                 }
-            }
-
-            loadTheme();
-            document.getElementById('textarea').style.fontSize = fontSize + 'px';
-            document.getElementById('fontSizeSlider').value = fontSize;
-        }
-
-        // Save before page unload
-        window.addEventListener('beforeunload', () => {
-            if (activeTabId && notes[activeTabId]) {
-                notes[activeTabId].content = document.getElementById('textarea').value;
-                saveToMemory();
-            }
-        });
-
-        // Save on visibility change (when app goes to background)
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && activeTabId && notes[activeTabId]) {
-                notes[activeTabId].content = document.getElementById('textarea').value;
-                saveToMemory();
-            }
-        });
-
-        // Storage functions
-        function saveToMemory() {
-            const data = {
-                notes: notes,
-                activeTabId: activeTabId,
-                tabCounter: tabCounter,
-                fontSize: fontSize
-            };
-            try {
-                localStorage.setItem('brutalistNotes', JSON.stringify(data));
-                console.log('Saved to localStorage:', data);
+                
+                const jsonData = JSON.stringify(state);
+                localStorage.setItem(APP_KEY, jsonData);
+                console.log('✓ Saved:', jsonData.length, 'characters');
+                return true;
             } catch (e) {
-                console.error('Failed to save:', e);
+                console.error('✗ Save failed:', e);
+                return false;
             }
         }
 
-        function loadFromMemory() {
+        function load() {
             try {
-                const stored = localStorage.getItem('brutalistNotes');
-                console.log('Loading from localStorage:', stored);
+                const stored = localStorage.getItem(APP_KEY);
                 if (stored) {
-                    const data = JSON.parse(stored);
-                    notes = data.notes || {};
-                    activeTabId = data.activeTabId || null;
-                    tabCounter = data.tabCounter || 1;
-                    fontSize = data.fontSize || 16;
-                    console.log('Loaded notes:', notes);
+                    state = JSON.parse(stored);
+                    console.log('✓ Loaded:', Object.keys(state.notes).length, 'notes');
+                    return true;
+                } else {
+                    console.log('○ No saved data found');
+                    return false;
                 }
             } catch (e) {
-                console.error('Failed to load:', e);
+                console.error('✗ Load failed:', e);
+                return false;
             }
         }
 
         // Tab management
         function createTab() {
-            const id = 'tab_' + tabCounter++;
-            notes[id] = {
-                title: 'NOTE',
+            const id = 'tab_' + state.tabCounter++;
+            state.notes[id] = {
                 content: ''
             };
-            activeTabId = id;
+            state.activeTabId = id;
             renderTabs();
             switchTab(id);
-            saveToMemory();
+            save();
         }
 
         function getTabTitle(content) {
@@ -426,11 +392,11 @@
             const tabsContainer = document.getElementById('tabs');
             tabsContainer.innerHTML = '';
             
-            for (const id in notes) {
+            for (const id in state.notes) {
                 const tab = document.createElement('div');
-                const title = getTabTitle(notes[id].content);
-                tab.className = 'tab' + (id === activeTabId ? ' active' : '');
-                tab.innerHTML = title + (Object.keys(notes).length > 1 ? '<span class="tab-close">×</span>' : '');
+                const title = getTabTitle(state.notes[id].content);
+                tab.className = 'tab' + (id === state.activeTabId ? ' active' : '');
+                tab.innerHTML = title + (Object.keys(state.notes).length > 1 ? '<span class="tab-close">×</span>' : '');
                 
                 tab.onclick = (e) => {
                     if (e.target.classList.contains('tab-close')) {
@@ -445,30 +411,30 @@
         }
 
         function switchTab(id) {
-            if (activeTabId && notes[activeTabId]) {
-                notes[activeTabId].content = document.getElementById('textarea').value;
-                saveToMemory();
+            // Save current tab content before switching
+            const textarea = document.getElementById('textarea');
+            if (state.activeTabId && state.notes[state.activeTabId]) {
+                state.notes[state.activeTabId].content = textarea.value;
             }
             
-            activeTabId = id;
-            document.getElementById('textarea').value = notes[id].content || '';
+            state.activeTabId = id;
+            textarea.value = state.notes[id].content || '';
             renderTabs();
             updateCounts();
-            saveToMemory();
+            save();
         }
 
         function deleteTab(id) {
-            if (Object.keys(notes).length === 1) return;
+            if (Object.keys(state.notes).length === 1) return;
             
-            delete notes[id];
+            delete state.notes[id];
             
-            if (activeTabId === id) {
-                activeTabId = Object.keys(notes)[0];
+            if (state.activeTabId === id) {
+                state.activeTabId = Object.keys(state.notes)[0];
             }
             
             renderTabs();
-            switchTab(activeTabId);
-            saveToMemory();
+            switchTab(state.activeTabId);
         }
 
         // Counts
@@ -494,18 +460,65 @@
             localStorage.setItem('theme', newTheme);
         }
 
+        // Initialize
+        function init() {
+            console.log('=== INITIALIZING APP ===');
+            
+            // Load saved data
+            const hasData = load();
+            
+            // Create first tab if no data exists
+            if (!hasData || Object.keys(state.notes).length === 0) {
+                console.log('Creating first tab...');
+                state.notes = {};
+                state.tabCounter = 1;
+                createTab();
+            } else {
+                // Render existing tabs
+                renderTabs();
+                if (state.activeTabId && state.notes[state.activeTabId]) {
+                    switchTab(state.activeTabId);
+                } else {
+                    switchTab(Object.keys(state.notes)[0]);
+                }
+            }
+
+            // Load theme and font size
+            loadTheme();
+            document.getElementById('textarea').style.fontSize = state.fontSize + 'px';
+            document.getElementById('fontSizeSlider').value = state.fontSize;
+            
+            console.log('=== INITIALIZATION COMPLETE ===');
+        }
+
         // Event listeners
         document.getElementById('newTab').onclick = createTab;
         document.getElementById('themeToggle').onclick = toggleTheme;
 
-        document.getElementById('textarea').oninput = () => {
-            if (notes[activeTabId]) {
-                notes[activeTabId].content = document.getElementById('textarea').value;
+        document.getElementById('textarea').addEventListener('input', function() {
+            if (state.activeTabId) {
+                state.notes[state.activeTabId].content = this.value;
                 updateCounts();
                 renderTabs();
-                saveToMemory();
+                save();
             }
-        };
+        });
+
+        // Ensure save on every possible exit point
+        document.getElementById('textarea').addEventListener('blur', save);
+        
+        window.addEventListener('beforeunload', function() {
+            save();
+        });
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                save();
+            }
+        });
+
+        // Save periodically (every 2 seconds)
+        setInterval(save, 2000);
 
         document.getElementById('copyBtn').onclick = () => {
             const text = document.getElementById('textarea').value;
@@ -521,12 +534,12 @@
         };
 
         document.getElementById('confirmClear').onclick = () => {
-            if (notes[activeTabId]) {
+            if (state.activeTabId) {
                 document.getElementById('textarea').value = '';
-                notes[activeTabId].content = '';
+                state.notes[state.activeTabId].content = '';
                 updateCounts();
                 renderTabs();
-                saveToMemory();
+                save();
             }
             document.getElementById('clearModal').style.display = 'none';
         };
@@ -536,16 +549,16 @@
         };
 
         document.getElementById('fontSizeSlider').oninput = (e) => {
-            fontSize = parseInt(e.target.value);
-            document.getElementById('textarea').style.fontSize = fontSize + 'px';
-            saveToMemory();
+            state.fontSize = parseInt(e.target.value);
+            document.getElementById('textarea').style.fontSize = state.fontSize + 'px';
+            save();
         };
 
         // Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'brutalist-notes-v1';
+                    const CACHE_NAME = 'brutalist-notes-v2';
                     
                     self.addEventListener('install', (event) => {
                         self.skipWaiting();
@@ -567,7 +580,7 @@
                 const blob = new Blob([swCode], { type: 'application/javascript' });
                 const swUrl = URL.createObjectURL(blob);
                 
-                navigator.serviceWorker.register(swUrl).then((registration) => {
+                navigator.serviceWorker.register(swUrl).then(() => {
                     console.log('Service Worker registered');
                 }).catch((error) => {
                     console.log('Service Worker registration failed:', error);
